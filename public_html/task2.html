@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Медвежонок · Музыкальные жанры</title>
+    <!-- canvas-confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard', cursive, sans-serif;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30"><circle cx="13" cy="13" r="11" fill="%23ffdb7c" stroke="%23955c1e" stroke-width="2.5"/><circle cx="9" cy="9" r="2" fill="black"/><circle cx="17" cy="9" r="2" fill="black"/><ellipse cx="13" cy="17" rx="5" ry="2.5" fill="%23955c1e" /></svg>') 13 13, auto;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1f4d2b 0%, #3b6e49 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: #6c9e5f;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.6), inset 0 0 30px #c6e6a3;
+            padding: 25px 25px 35px 25px;
+            border: 8px solid #4f7542;
+        }
+
+        /* Блок с медвежонком */
+        .bear-task-section {
+            background: #8fc27c;
+            border-radius: 100px 100px 50px 50px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 6px solid #fdebbc;
+            box-shadow: 0 15px 0 #3b642b, inset 0 0 30px #e9f7d3;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bear-avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 160px;
+        }
+
+        .bear-avatar .bear {
+            width: 150px;
+            height: 150px;
+            background: #9b693c;
+            background: radial-gradient(circle at 30% 30%, #d49d62, #7b4d27);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            box-shadow: 0 15px 0 #5f3e22, inset -10px -12px 15px #8b602f;
+            border: 5px solid #573e22;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bear-avatar .ear {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #b8804a;
+            border-radius: 70% 70% 60% 60%;
+            top: -30px;
+            border: 5px solid #573e22;
+        }
+        .bear-avatar .ear.left { left: 1px; transform: rotate(-25deg); }
+        .bear-avatar .ear.right { right: 1px; transform: rotate(25deg); }
+
+        .bear-avatar .face {
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bear-avatar .eyes {
+            display: flex;
+            gap: 32px;
+        }
+        .bear-avatar .eye {
+            width: 20px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid #2d1d0c;
+            position: relative;
+        }
+        .bear-avatar .eye::after {
+            content: '';
+            width: 12px;
+            height: 13px;
+            background: #2f1f0e;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+        }
+        .bear-avatar .nose {
+            width: 30px;
+            height: 20px;
+            background: #4b3119;
+            border-radius: 40% 40% 50% 50%;
+            border: 3px solid #2d1d0c;
+            margin-top: 7px;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: #ffffec;
+            border-radius: 60px 60px 60px 40px;
+            padding: 30px 40px;
+            border: 6px solid #6d4f2c;
+            box-shadow: 15px 18px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 5px #fffed8;
+            max-width: 750px;
+            font-size: 1.6rem;
+            line-height: 1.5;
+            color: #203d16;
+            font-weight: 600;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -30px;
+            bottom: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ffffec;
+            border-radius: 50%;
+            border: 6px solid #6d4f2c;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(45deg);
+            box-shadow: -8px 8px 0 rgba(0,0,0,0.1);
+        }
+
+        /* ЖАНРЫ — зоны для перетаскивания */
+        .genre-dropzones {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0 30px;
+            flex-wrap: wrap;
+        }
+
+        .genre-drop {
+            background: #fff9e0;
+            border-radius: 50px;
+            padding: 20px 25px;
+            border: 5px dashed #b3823c;
+            box-shadow: 0 12px 0 #7e5826, inset 0 0 0 6px #fff0bb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 200px;
+            min-height: 240px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .genre-drop[data-genre="song"] { background: #fff3d1; }
+        .genre-drop[data-genre="dance"] { background: #ffe0f0; }
+        .genre-drop[data-genre="march"] { background: #d9e6d3; }
+
+        .genre-drop span {
+            font-size: 5.5rem;
+            line-height: 1.2;
+            filter: drop-shadow(4px 6px 0 #cfb087);
+        }
+
+        .genre-label {
+            font-size: 2rem;
+            font-weight: bold;
+            background: #6b8c4a;
+            color: #f9f0b8;
+            padding: 8px 24px;
+            border-radius: 50px;
+            margin: 10px 0 10px;
+            border: 3px solid #3f6129;
+            box-shadow: inset 0 2px 5px #b1d18b, 0 5px 0 #3b6026;
+        }
+
+        .drop-slot {
+            min-height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Карточки мелодий (перетаскиваемые) */
+        .music-pool {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 10px 0 30px;
+        }
+
+        .music-card {
+            background: #ffcf8a;
+            border: 6px solid #ad6d2b;
+            border-radius: 60px;
+            padding: 20px 25px;
+            box-shadow: 0 16px 0 #7b4f1f, inset 0 0 0 6px #ffeac2;
+            cursor: grab;
+            transition: all 0.1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 200px;
+            user-select: none;
+            touch-action: none;
+            transform: translate(0,0);
+            opacity: 1;
+            position: relative;
+        }
+
+        .music-card:active {
+            cursor: grabbing;
+            opacity: 0.8;
+            box-shadow: 0 8px 0 #7b4f1f, inset 0 0 0 6px #ffeac2;
+            transform: translateY(8px);
+        }
+
+        .music-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+            box-shadow: 0 5px 0 #7b4f1f;
+        }
+
+        .music-card .sound-icon {
+            font-size: 4.5rem;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .music-card .music-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #422c12;
+            background: #fffde7;
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 3px solid #a5661e;
+            pointer-events: none;
+        }
+
+        .play-btn {
+            margin-top: 8px;
+            background: #b56532;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-bottom: 5px solid #6d3f1f;
+            cursor: pointer;
+            transition: 0.05s linear;
+            pointer-events: auto;
+        }
+        .play-btn:active {
+            border-bottom-width: 2px;
+            transform: translateY(3px);
+        }
+
+        /* Кнопка проверки и сообщение */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0 10px;
+        }
+
+        .check-btn {
+            background: #fdd673;
+            font-size: 2.2rem;
+            font-weight: bold;
+            padding: 18px 50px;
+            border-radius: 80px;
+            border: 6px solid #b8782e;
+            box-shadow: 0 14px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
+            color: #2c4d1c;
+            cursor: pointer;
+            transition: 0.08s;
+            margin-bottom: 20px;
+        }
+
+        .check-btn:active {
+            transform: translateY(8px);
+            box-shadow: 0 6px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
+        }
+
+        .feedback-message {
+            font-size: 2rem;
+            min-height: 3.5rem;
+            color: #fbf5b0;
+            text-shadow: 4px 4px 0 #1c481c;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 5px;
+            background: #fdebbc;
+            padding: 12px 35px;
+            border-radius: 60px;
+            font-size: 1.8rem;
+            color: #284f18;
+            border: 5px solid #a57c42;
+            box-shadow: 0 8px 0 #6d4f1e;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.1s;
+        }
+
+        .home-link:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #6d4f1e;
+        }
+
+        /* в drop-зоне отображение прикреплённой карточки */
+        .placed-card {
+            background: #ffcf8a;
+            border-radius: 40px;
+            padding: 8px 16px;
+            border: 4px solid #ad6d2b;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #2a1d0a;
+            box-shadow: inset 0 0 0 3px #ffeac2;
+            margin-top: 5px;
+            max-width: 180px;
+            text-align: center;
+        }
+
+        /* адаптив */
+        @media (max-width: 850px) {
+            .bear-task-section { flex-direction: column; }
+            .speech-bubble { font-size: 1.3rem; padding: 20px; }
+            .speech-bubble::after { left: 40px; top: -25px; transform: rotate(135deg); }
+            .genre-drop { min-width: 160px; padding: 15px; }
+            .genre-drop span { font-size: 4rem; }
+            .music-card { min-width: 170px; padding: 15px; }
+        }
+
+        /* подсветка при перетаскивании над зоной */
+        .genre-drop.drag-over {
+            border: 5px solid #f3ff96;
+            background: #ffffd0;
+            transform: scale(1.02);
+        }
+
+        .reset-small {
+            font-size: 1.3rem;
+            margin-left: 15px;
+            background: #afd69b;
+            padding: 5px 20px;
+            border-radius: 40px;
+            border: 3px solid #527a3e;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper">
+    <!-- Медвежонок + речь -->
+    <div class="bear-task-section">
+        <div class="bear-avatar">
+            <div class="bear">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="face">
+                    <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                    <div class="nose"></div>
+                </div>
+            </div>
+        </div>
+        <div class="speech-bubble">
+            🐻 <strong>Ребята, будем выполнять новое задание!</strong><br>
+            Музыка бывает разной: песня, марш и танец — это три главных жанра. 
+            Прослушайте мелодии и перетащите карточки к подходящему жанру. 
+            <span style="background: #ffecb3; padding: 4px 15px; border-radius: 40px; display: inline-block; margin-top: 8px;">
+                🎤 песня &nbsp;|&nbsp; 💃 танец &nbsp;|&nbsp; 🥁 марш
+            </span>
+        </div>
+    </div>
+
+    <!-- ЗОНЫ ДЛЯ ПЕРЕТАСКИВАНИЯ (жанры) -->
+    <div class="genre-dropzones">
+        <!-- Песня -->
+        <div class="genre-drop" data-genre="song" id="dropSong">
+            <span>🎤</span>
+            <div class="genre-label">ПЕСНЯ</div>
+            <div class="drop-slot" id="slotSong"></div>
+        </div>
+        <!-- Танец -->
+        <div class="genre-drop" data-genre="dance" id="dropDance">
+            <span>💃</span>
+            <div class="genre-label">ТАНЕЦ</div>
+            <div class="drop-slot" id="slotDance"></div>
+        </div>
+        <!-- Марш -->
+        <div class="genre-drop" data-genre="march" id="dropMarch">
+            <span>🥁</span>
+            <div class="genre-label">МАРШ</div>
+            <div class="drop-slot" id="slotMarch"></div>
+        </div>
+    </div>
+
+    <!-- Пул музыкальных карточек (перетаскиваемые) -->
+    <div class="music-pool" id="musicPool">
+        <!-- Карточка 1: Итальянская полька (Танец) -->
+        <div class="music-card" draggable="true" data-melody="polka" id="cardPolka">
+            <div class="sound-icon">🎵</div>
+            <div class="music-name">1</div>
+            <button class="play-btn" data-play="polka">▶ Слушать</button>
+        </div>
+        <!-- Карточка 2: Марш футболистов (Марш) -->
+        <div class="music-card" draggable="true" data-melody="march" id="cardMarch">
+            <div class="sound-icon">🎵</div>
+            <div class="music-name">2</div>
+            <button class="play-btn" data-play="march">▶ Слушать</button>
+        </div>
+        <!-- Карточка 3: Пусть всегда будет солнце (Песня) -->
+        <div class="music-card" draggable="true" data-melody="song" id="cardSun">
+            <div class="sound-icon">🎵️</div>
+            <div class="music-name">3</div>
+            <button class="play-btn" data-play="song">▶ Слушать</button>
+        </div>
+    </div>
+
+    <!-- Кнопка проверки и обратная связь -->
+    <div class="action-area">
+        <button class="check-btn" id="checkAnswer">🥁 ПРОВЕРИТЬ 🎤</button>
+        <div class="feedback-message" id="feedbackMsg"></div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="index.html" class="home-link">🏡 На поляну</a>
+            <button class="reset-small" id="resetBtn">🔄 Сбросить карточки</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ---------- ЗВУК (Web Audio) ----------
+        function playMelody(type) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.4, now);
+            gainNode.connect(ctx.destination);
+
+            function createOscillator(wave, freq, start, duration, gainVal = 0.25) {
+                const osc = ctx.createOscillator();
+                osc.type = wave;
+                osc.frequency.value = freq;
+                const oscGain = ctx.createGain();
+                oscGain.gain.setValueAtTime(gainVal, start);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+                osc.connect(oscGain);
+                oscGain.connect(gainNode);
+                osc.start(start);
+                osc.stop(start + duration);
+            }
+
+            if (type === 'polka') {
+                const t = now;
+                createOscillator('triangle', 659.25, t, 0.25, 0.22);
+                createOscillator('triangle', 783.99, t+0.25, 0.2, 0.22);
+                createOscillator('triangle', 1046.50, t+0.5, 0.3, 0.24);
+                createOscillator('triangle', 783.99, t+0.8, 0.2, 0.22);
+                createOscillator('triangle', 659.25, t+1.0, 0.3, 0.2);
+                createOscillator('sawtooth', 523.25, t+1.3, 0.2, 0.15);
+                createOscillator('triangle', 659.25, t+1.5, 0.3, 0.2);
+                createOscillator('triangle', 783.99, t+1.8, 0.3, 0.22);
+                createOscillator('sine', 1046.50, t+2.0, 0.4, 0.18);
+            } else if (type === 'march') {
+                const s = now;
+                createOscillator('square', 261.63, s, 0.3, 0.3);
+                createOscillator('square', 329.63, s+0.4, 0.3, 0.28);
+                createOscillator('square', 392.00, s+0.8, 0.3, 0.28);
+                createOscillator('square', 523.25, s+1.2, 0.35, 0.3);
+                createOscillator('triangle', 392.00, s+1.6, 0.25, 0.25);
+                createOscillator('square', 329.63, s+1.9, 0.3, 0.25);
+                createOscillator('sawtooth', 261.63, s+2.2, 0.3, 0.25);
+                const bufferSize = ctx.sampleRate * 0.2;
+                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = noiseBuffer.getChannelData(0);
+                for (let i=0; i<bufferSize; i++) data[i] = Math.random()*2-1;
+                const noise = ctx.createBufferSource();
+                noise.buffer = noiseBuffer;
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.08, s);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, s+0.15);
+                noise.connect(noiseGain);
+                noiseGain.connect(gainNode);
+                noise.start(s); noise.stop(s+0.2);
+            } else if (type === 'song') {
+                const t = now;
+                createOscillator('sine', 392.00, t, 0.35, 0.25);
+                createOscillator('sine', 523.25, t+0.4, 0.3, 0.22);
+                createOscillator('sine', 659.25, t+0.75, 0.3, 0.25);
+                createOscillator('sine', 587.33, t+1.1, 0.3, 0.22);
+                createOscillator('sine', 523.25, t+1.45, 0.35, 0.25);
+                createOscillator('triangle', 392.00, t+1.8, 0.3, 0.2);
+                createOscillator('sine', 523.25, t+2.1, 0.4, 0.3);
+            }
+        }
+
+        // Кнопки "Слушать"
+        document.querySelectorAll('.play-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const melody = btn.dataset.play;
+                playMelody(melody);
+                const card = btn.closest('.music-card');
+                card.style.transform = 'scale(0.97)';
+                setTimeout(() => card.style.transform = '', 100);
+            });
+        });
+
+        // ---------- DRAG & DROP ----------
+        const cards = document.querySelectorAll('.music-card');
+        const dropZones = document.querySelectorAll('.genre-drop');
+        const slots = {
+            song: document.getElementById('slotSong'),
+            dance: document.getElementById('slotDance'),
+            march: document.getElementById('slotMarch')
+        };
+        const pool = document.getElementById('musicPool');
+
+        // Сохраняем соответствие карточка -> жанр
+        let currentPlacement = {
+            polka: null,   // 'dance'
+            march: null,   // 'march'
+            song: null     // 'song'
+        };
+
+        // Функция обновления отображения слотов
+        function renderPlacements() {
+            // Очищаем слоты
+            for (let key in slots) {
+                slots[key].innerHTML = '';
+            }
+            // Прячем карточки, которые уже размещены
+            document.querySelectorAll('.music-card').forEach(card => {
+                const melody = card.dataset.melody;
+                if (currentPlacement[melody] !== null) {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = 'flex';
+                }
+            });
+
+            // Заполняем слоты
+            for (let melody in currentPlacement) {
+                const genre = currentPlacement[melody];
+                if (genre) {
+                    const slot = slots[genre];
+                    if (slot) {
+                        const displayDiv = document.createElement('div');
+                        displayDiv.className = 'placed-card';
+                        let name = '';
+                        if (melody === 'polka') name = 'Итальянская полька';
+                        else if (melody === 'march') name = 'Марш футболистов';
+                        else if (melody === 'song') name = 'Пусть всегда будет солнце';
+                        displayDiv.textContent = name;
+                        slot.appendChild(displayDiv);
+                    }
+                }
+            }
+        }
+
+        // Drag start
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                const melody = card.dataset.melody;
+                if (currentPlacement[melody] !== null) {
+                    e.preventDefault();
+                    return false;
+                }
+                e.dataTransfer.setData('text/plain', melody);
+                e.dataTransfer.effectAllowed = 'move';
+                card.classList.add('dragging');
+            });
+            card.addEventListener('dragend', (e) => {
+                card.classList.remove('dragging');
+            });
+        });
+
+        // Drag over drop zones
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const melody = e.dataTransfer.getData('text/plain');
+                if (!melody) return;
+
+                const genre = zone.dataset.genre; // 'song', 'dance', 'march'
+                // Проверяем, не занята ли уже эта карточка
+                if (currentPlacement[melody] !== null) {
+                    alert('Эта мелодия уже прикреплена!');
+                    return;
+                }
+
+                // Проверяем, не занят ли слот другой карточкой того же жанра? разрешаем только одну карточку на жанр
+                for (let m in currentPlacement) {
+                    if (currentPlacement[m] === genre) {
+                        alert('Этот жанр уже занят другой мелодией! Сначала сбросьте.');
+                        return;
+                    }
+                }
+
+                // Сохраняем размещение
+                currentPlacement[melody] = genre;
+                renderPlacements();
+            });
+        });
+
+        // Предотвращаем стандартное поведение для document
+        document.addEventListener('dragover', (e) => e.preventDefault());
+        document.addEventListener('drop', (e) => e.preventDefault());
+
+        // Сброс размещений
+        function resetPlacements() {
+            currentPlacement = { polka: null, march: null, song: null };
+            renderPlacements();
+            document.getElementById('feedbackMsg').textContent = '';
+        }
+
+        document.getElementById('resetBtn').addEventListener('click', resetPlacements);
+
+        // Проверка ответа
+        const correctMap = {
+            polka: 'dance',   // танец
+            march: 'march',
+            song: 'song'
+        };
+
+        function fireConfetti() {
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6, x: 0.3 } });
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6, x: 0.7 } });
+        }
+
+        document.getElementById('checkAnswer').addEventListener('click', () => {
+            const msgDiv = document.getElementById('feedbackMsg');
+            // Проверяем, все ли три размещены
+            if (currentPlacement.polka === null || currentPlacement.march === null || currentPlacement.song === null) {
+                msgDiv.textContent = '🐾 Распредели все три мелодии!';
+                return;
+            }
+
+            let allCorrect = true;
+            for (let melody in correctMap) {
+                if (currentPlacement[melody] !== correctMap[melody]) {
+                    allCorrect = false;
+                    break;
+                }
+            }
+
+            if (allCorrect) {
+                msgDiv.textContent = '🎉 Ура! Всё верно! Ритм возвращается! 🎉';
+                fireConfetti();
+                // дополнительные конфетти
+                setTimeout(() => confetti({ particleCount: 80, spread: 70 }), 200);
+            } else {
+                msgDiv.textContent = '🤔 Попробуй ещё раз! Послушай внимательно.';
+            }
+        });
+
+        // Медвежьи ушки
+        const bear = document.querySelector('.bear-avatar .bear');
+        if(bear) {
+            bear.addEventListener('mouseenter', () => {
+                bear.querySelectorAll('.ear').forEach(e => { e.style.transform += ' rotate(10deg) scale(1.05)'; });
+            });
+            bear.addEventListener('mouseleave', () => {
+                bear.querySelectorAll('.ear').forEach(e => {
+                    e.style.transform = e.classList.contains('left') ? 'rotate(-25deg)' : 'rotate(25deg)';
+                });
+            });
+        }
+
+        // Инициализация
+        renderPlacements();
+
+        // Дополнительно: разрешить touch-события для мобильных (упрощенно, но drag работает)
+        // Для лучшей поддержки тачскринов можно добавить, но базовый drag работает.
+    })();
+</script>
+</body>
+</html>
