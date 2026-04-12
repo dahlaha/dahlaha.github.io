@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальный квест · Спаси ритм!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard', cursive, sans-serif;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30"><circle cx="13" cy="13" r="11" fill="%23ffdb7c" stroke="%23955c1e" stroke-width="2.5"/><circle cx="9" cy="9" r="2" fill="black"/><circle cx="17" cy="9" r="2" fill="black"/><ellipse cx="13" cy="17" rx="5" ry="2.5" fill="%23955c1e" /></svg>') 13 13, auto;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1f4d2b 0%, #3b6e49 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            max-width: 1300px;
+            width: 100%;
+            background: #6c9e5f;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.6), inset 0 0 30px #c6e6a3;
+            padding: 25px 25px 35px 25px;
+            border: 8px solid #4f7542;
+            position: relative;
+        }
+
+        /* ===== ПРИВЕТСТВИЕ МЕДВЕЖОНКА ===== */
+        .bear-greeting {
+            background: #8fc27c;
+            border-radius: 100px 100px 50px 50px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 6px solid #fdebbc;
+            box-shadow: 0 15px 0 #3b642b, inset 0 0 30px #e9f7d3;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .greeting-bear {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 180px;
+        }
+
+        .greeting-bear .bear {
+            width: 150px;
+            height: 150px;
+            background: #9b693c;
+            background: radial-gradient(circle at 30% 30%, #d49d62, #7b4d27);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            box-shadow: 0 15px 0 #5f3e22, inset -10px -12px 15px #8b602f;
+            border: 5px solid #573e22;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .greeting-bear .ear {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #b8804a;
+            border-radius: 70% 70% 60% 60%;
+            top: -30px;
+            border: 5px solid #573e22;
+        }
+        .greeting-bear .ear.left { left: 1px; transform: rotate(-30deg); }
+        .greeting-bear .ear.right { right: 1px; transform: rotate(30deg); }
+
+        .greeting-bear .face {
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .greeting-bear .eyes {
+            display: flex;
+            gap: 32px;
+        }
+        .greeting-bear .eye {
+            width: 20px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid #2d1d0c;
+            position: relative;
+        }
+        .greeting-bear .eye::after {
+            content: '';
+            width: 12px;
+            height: 13px;
+            background: #2f1f0e;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+        }
+        .greeting-bear .nose {
+            width: 30px;
+            height: 20px;
+            background: #4b3119;
+            border-radius: 40% 40% 50% 50%;
+            border: 3px solid #2d1d0c;
+            margin-top: 7px;
+        }
+
+        .greeting-bubble {
+            position: relative;
+            background: #ffffec;
+            border-radius: 60px 60px 60px 40px;
+            padding: 35px 45px;
+            border: 6px solid #6d4f2c;
+            box-shadow: 15px 18px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 5px #fffed8;
+            max-width: 700px;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #203d16;
+            font-weight: 600;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .greeting-bubble::after {
+            content: '';
+            position: absolute;
+            left: -30px;
+            bottom: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ffffec;
+            border-radius: 50%;
+            border: 6px solid #6d4f2c;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(45deg);
+            box-shadow: -8px 8px 0 rgba(0,0,0,0.1);
+        }
+
+        .greeting-bubble span.alert {
+            display: inline-block;
+            background: #ffb37c;
+            border-radius: 40px;
+            padding: 10px 30px;
+            margin-top: 15px;
+            font-size: 1.8rem;
+            border: 4px solid #b1410e;
+            color: #4f2105;
+            animation: pulse 2.0s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); background: #ffa25e; }
+        }
+
+        /* ===== КАРТА-ПОЛЯНА ===== */
+        .map-container {
+            background: #7fb073;
+            background-color: #86bb6e;
+            background-image: 
+                radial-gradient(circle at 10% 20%, #9fd17c 4px, transparent 4px),
+                radial-gradient(circle at 30% 70%, #9fd17c 5px, transparent 5px),
+                radial-gradient(circle at 60% 30%, #9fd17c 4px, transparent 4px),
+                radial-gradient(circle at 80% 60%, #9fd17c 6px, transparent 6px),
+                radial-gradient(circle at 45% 90%, #9fd17c 5px, transparent 5px),
+                radial-gradient(circle at 90% 15%, #9fd17c 4px, transparent 4px),
+                radial-gradient(circle at 15% 85%, #9fd17c 6px, transparent 6px),
+                radial-gradient(circle at 70% 45%, #9fd17c 5px, transparent 5px),
+                linear-gradient(135deg, #86bb6e, #b0de8f);
+            border-radius: 90px 90px 50px 50px;
+            border: 6px dashed #fdebbc;
+            box-shadow: inset 0 0 40px #daf0bc, 0 15px 18px #2b4d23;
+            position: relative;
+            height: 520px;
+            margin: 20px 0 10px;
+            overflow: hidden;
+        }
+
+        /* ЦВЕТЫ - равномерно распределены по всей полянке */
+        .flowers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .flower {
+            position: absolute;
+            font-size: 24px;
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.1));
+            animation: gentleSway 5s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            75% { transform: rotate(-3deg); }
+        }
+
+        /* Позиции цветов - вариант 0 */
+        .flowers-0 .flower1 { top: 3%; left: 12%; }
+        .flowers-0 .flower2 { top: 15%; left: 45%; }
+        .flowers-0 .flower3 { top: 12%; left: 78%; }
+        .flowers-0 .flower4 { top: 25%; left: 5%; }
+        .flowers-0 .flower5 { top: 32%; left: 65%; }
+        .flowers-0 .flower6 { top: 28%; left: 88%; }
+        .flowers-0 .flower7 { top: 42%; left: 15%; }
+        .flowers-0 .flower8 { top: 48%; left: 72%; }
+        .flowers-0 .flower9 { top: 55%; left: 8%; }
+        .flowers-0 .flower10 { top: 58%; left: 52%; }
+        .flowers-0 .flower11 { top: 65%; left: 85%; }
+        .flowers-0 .flower12 { top: 72%; left: 25%; }
+        .flowers-0 .flower13 { top: 78%; left: 58%; }
+        .flowers-0 .flower14 { top: 82%; left: 12%; }
+        .flowers-0 .flower15 { top: 88%; left: 42%; }
+        .flowers-0 .flower16 { top: 85%; left: 75%; }
+        .flowers-0 .flower17 { top: 92%; left: 28%; }
+        .flowers-0 .flower18 { top: 38%; left: 35%; }
+        .flowers-0 .flower19 { top: 68%; left: 45%; }
+        .flowers-0 .flower20 { top: 18%; left: 92%; }
+
+        /* ТРОПИНКА */
+        .path {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .path svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .path-border {
+            stroke: #5a4630;
+            stroke-width: 48;
+            stroke-linecap: round;
+            fill: none;
+            opacity: 0.9;
+        }
+
+        .path-main {
+            stroke: #d4b896;
+            stroke-width: 40;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+        .path-dash {
+            stroke: #6b5340;
+            stroke-width: 3;
+            stroke-linecap: round;
+            fill: none;
+            stroke-dasharray: 15 12;
+            opacity: 0.8;
+        }
+
+        /* СУНДУКИ */
+        .chest {
+            position: absolute;
+            width: 80px;
+            height: 72px;
+            background: #e5b873;
+            background: radial-gradient(circle at 30% 25%, #fde39c, #c28d4b);
+            border-radius: 18px 18px 10px 10px;
+            border: 5px solid #7b4f2e;
+            border-bottom-width: 10px;
+            box-shadow: 0 10px 0 #68411f, inset 0 -3px 8px #fbe1a8, inset 0 3px 8px #ffffdd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            color: #6b3d19;
+            text-shadow: 2px 4px 0 #ffd89f;
+            transform-origin: bottom;
+            animation: float 4s infinite ease-in-out;
+            pointer-events: auto;
+        }
+
+        .chest:hover {
+            transform: scale(1.15) translateY(-8px);
+            box-shadow: 0 14px 0 #68411f, inset 0 -3px 8px #fff2b5;
+            filter: brightness(1.25);
+        }
+
+        .chest:active {
+            transform: scale(0.98) translateY(6px);
+            box-shadow: 0 4px 0 #68411f;
+        }
+
+        .chest::after {
+            content: "🔒";
+            font-size: 26px;
+            position: absolute;
+            top: -16px;
+            right: 2px;
+            transform: rotate(15deg);
+            color: #fcd684;
+            text-shadow: 0 3px 0 #8b5f2b;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+
+        .info-bar {
+            text-align: center;
+            margin: 15px 0 5px;
+            font-size: 1.4rem;
+            color: #faf0b0;
+            text-shadow: 3px 3px 0 #3f6d2b;
+        }
+
+        /* КНОПКИ ПЕРЕКЛЮЧЕНИЯ УРОВНЕЙ (снизу справа) */
+        .level-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .level-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #fdd673;
+            border: 5px solid #b8782e;
+            box-shadow: 0 8px 0 #8a5a24, inset 0 0 0 4px #fff2bf;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c4d1c;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+
+        .level-btn:hover {
+            transform: scale(1.05);
+            background: #ffe494;
+        }
+
+        .level-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #8a5a24, inset 0 0 0 4px #fff2bf;
+        }
+
+        .level-btn.active {
+            background: #b3d98b;
+            border-color: #2f6b1c;
+            box-shadow: 0 8px 0 #2a5918, inset 0 0 0 4px #e2ffc7;
+        }
+
+        /* адаптация */
+        @media (max-width: 800px) {
+            .bear-greeting {
+                flex-direction: column;
+                padding: 25px;
+            }
+            .greeting-bubble {
+                font-size: 1.2rem;
+                padding: 25px;
+            }
+            .greeting-bubble::after {
+                left: 40px;
+                top: -25px;
+                transform: rotate(135deg);
+            }
+            .map-container { height: 400px; }
+            .chest { width: 60px; height: 55px; font-size: 32px; }
+            .chest::after { font-size: 20px; top: -12px; }
+            .level-btn { width: 55px; height: 55px; font-size: 1.5rem; }
+            .level-controls { bottom: 15px; right: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <!-- ===== ПРИВЕТСТВИЕ: МЕДВЕЖОНОК ===== -->
+        <div class="bear-greeting">
+            <div class="greeting-bear">
+                <div class="bear">
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+                    <div class="face">
+                        <div class="eyes">
+                            <div class="eye"></div>
+                            <div class="eye"></div>
+                        </div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="greeting-bubble" id="bearMessage">
+                🐻 <strong>Ребята, беда!</strong><br>
+                Таинственный Злой Молчун заколдовал наш лес. Птицы перестали петь слаженно, дождь капает как попало, а мои барабаны вообще не стучат!<br><br>
+                Молчун спрятал ритмы в сундуках. Помогите мне их найти, и музыка снова вернется!<br>
+                <span class="alert">👇 Жми на сундуки внизу! 👇</span>
+            </div>
+        </div>
+
+        <!-- ===== ПОЛЯНА С ТРОПИНКОЙ, ЦВЕТАМИ И СУНДУКАМИ ===== -->
+        <div class="map-container" id="mapContainer">
+            <!-- Цветы -->
+            <div class="flowers flowers-0" id="flowersLayer">
+                <div class="flower flower1">🌼</div><div class="flower flower2">🌸</div><div class="flower flower3">🌻</div>
+                <div class="flower flower4">🌺</div><div class="flower flower5">🌷</div><div class="flower flower6">🌼</div>
+                <div class="flower flower7">🌸</div><div class="flower flower8">🌻</div><div class="flower flower9">🌺</div>
+                <div class="flower flower10">🌷</div><div class="flower flower11">🌼</div><div class="flower flower12">🌸</div>
+                <div class="flower flower13">🌻</div><div class="flower flower14">🌺</div><div class="flower flower15">🌷</div>
+                <div class="flower flower16">🌼</div><div class="flower flower17">🌸</div><div class="flower flower18">🌻</div>
+                <div class="flower flower19">🌺</div><div class="flower flower20">🌷</div>
+            </div>
+
+            <!-- Тропинка SVG -->
+            <div class="path" id="pathLayer">
+                <svg viewBox="0 0 1000 520" preserveAspectRatio="none" id="pathSvg">
+                    <path id="pathBorder" d="M 80,40 C 150,100 180,180 220,250 C 260,320 320,360 400,370 C 500,380 620,360 720,380 C 800,395 870,420 920,450" class="path-border"/>
+                    <path id="pathMain" d="M 80,40 C 150,100 180,180 220,250 C 260,320 320,360 400,370 C 500,380 620,360 720,380 C 800,395 870,420 920,450" class="path-main"/>
+                    <path id="pathDash" d="M 80,40 C 150,100 180,180 220,250 C 260,320 320,360 400,370 C 500,380 620,360 720,380 C 800,395 870,420 920,450" class="path-dash"/>
+                </svg>
+            </div>
+
+            <!-- Сундуки -->
+            <a href="task1.html" id="chest1Link" style="text-decoration: none; color: inherit; pointer-events: auto; position: absolute; top: 23%; left: 15%; transform: translate(-50%, -50%); z-index: 30;">
+                <div class="chest" id="chest1">⚜️</div>
+            </a>
+            <a href="task2.html" id="chest2Link" style="text-decoration: none; color: inherit; pointer-events: auto; position: absolute; top: 60%; left: 38%; transform: translate(-50%, -50%); z-index: 30;">
+                <div class="chest" id="chest2">⚜️</div>
+            </a>
+            <a href="task3.html" id="chest3Link" style="text-decoration: none; color: inherit; pointer-events: auto; position: absolute; top: 68%; left: 78%; transform: translate(-50%, -50%); z-index: 30;">
+                <div class="chest" id="chest3">⚜️</div>
+            </a>
+        </div>
+
+        <div class="info-bar">
+            🎵 Открывай сундуки — возвращай ритм в лес! 🎵
+        </div>
+    </div>
+
+    <!-- КНОПКИ ПЕРЕКЛЮЧЕНИЯ УРОВНЕЙ -->
+    <div class="level-controls">
+        <div class="level-btn active" data-level="0">1</div>
+        <div class="level-btn" data-level="1">2</div>
+        <div class="level-btn" data-level="2">3</div>
+        <div class="level-btn" data-level="3">4</div>
+    </div>
+
+    <script>
+        (function() {
+            // Конфигурация 4 уровней (полянок)
+            const levels = [
+                { // Уровень 0 (начальный)
+                    message: `🐻 <strong>Ребята, беда!</strong><br>
+                        Таинственный Злой Молчун заколдовал наш лес. Птицы перестали петь слаженно, дождь капает как попало, а мои барабаны вообще не стучат!<br><br>
+                        Молчун спрятал ритмы в сундуках. Помогите мне их найти, и музыка снова вернется!<br>
+                        <span class="alert">👇 Жми на сундуки внизу! 👇</span>`,
+                    pathD: "M 80,40 C 150,100 180,180 220,250 C 260,320 320,360 400,370 C 500,380 620,360 720,380 C 800,395 870,420 920,450",
+                    chests: [
+                        { top: '23%', left: '15%', href: 'task1.html' },
+                        { top: '60%', left: '38%', href: 'task2.html' },
+                        { top: '68%', left: '78%', href: 'task3.html' }
+                    ],
+                    flowerClass: 'flowers-0'
+                },
+                { // Уровень 1 (новые задания 4-6)
+                    message: `🐻 <strong>Сегодня мы продолжаем нашу ответственную миссию!</strong><br>
+                        Ваш ждут сундучки с новыми заданиями!`,
+                    pathD: "M 120,60 C 250,150 300,250 450,280 C 550,300 650,250 780,320 C 850,360 880,400 920,460",
+                    chests: [
+                        { top: '28%', left: '22%', href: 'task4.html' },
+                        { top: '55%', left: '48%', href: 'task5.html' },
+                        { top: '75%', left: '72%', href: 'task6.html' }
+                    ],
+                    flowerClass: 'flowers-0' // используем те же цветы, но можно создать отдельные классы
+                },
+                { // Уровень 2
+                    message: `🐻 <strong>Отлично! Ещё немного — и лес зазвучит!</strong><br>
+                        В этих сундуках спрятаны особенные ритмы. Справитесь?`,
+                    pathD: "M 60,80 C 180,120 250,300 400,320 C 550,340 680,250 800,350 C 880,400 900,440 940,480",
+                    chests: [
+                        { top: '20%', left: '30%', href: 'task4.html' },
+                        { top: '50%', left: '55%', href: 'task5.html' },
+                        { top: '80%', left: '65%', href: 'task6.html' }
+                    ],
+                    flowerClass: 'flowers-0'
+                },
+                { // Уровень 3
+                    message: `🐻 <strong>Последние сундуки! Вы почти вернули музыку!</strong><br>
+                        Слушайте внимательно, ритмы становятся сложнее.`,
+                    pathD: "M 100,30 C 200,150 350,200 500,250 C 650,300 750,380 850,420 C 900,440 920,460 950,490",
+                    chests: [
+                        { top: '15%', left: '45%', href: 'task4.html' },
+                        { top: '45%', left: '70%', href: 'task5.html' },
+                        { top: '70%', left: '25%', href: 'task6.html' }
+                    ],
+                    flowerClass: 'flowers-0'
+                }
+            ];
+
+            const bearMessage = document.getElementById('bearMessage');
+            const pathBorder = document.getElementById('pathBorder');
+            const pathMain = document.getElementById('pathMain');
+            const pathDash = document.getElementById('pathDash');
+            const chest1Link = document.getElementById('chest1Link');
+            const chest2Link = document.getElementById('chest2Link');
+            const chest3Link = document.getElementById('chest3Link');
+            const chest1 = document.getElementById('chest1');
+            const chest2 = document.getElementById('chest2');
+            const chest3 = document.getElementById('chest3');
+            const levelBtns = document.querySelectorAll('.level-btn');
+
+            function setLevel(levelIndex) {
+                const level = levels[levelIndex];
+                if (!level) return;
+
+                // Меняем сообщение
+                bearMessage.innerHTML = level.message;
+
+                // Меняем тропинку
+                pathBorder.setAttribute('d', level.pathD);
+                pathMain.setAttribute('d', level.pathD);
+                pathDash.setAttribute('d', level.pathD);
+
+                // Меняем сундуки (позиции и ссылки)
+                const chests = level.chests;
+                chest1Link.style.top = chests[0].top;
+                chest1Link.style.left = chests[0].left;
+                chest1Link.href = chests[0].href;
+
+                chest2Link.style.top = chests[1].top;
+                chest2Link.style.left = chests[1].left;
+                chest2Link.href = chests[1].href;
+
+                chest3Link.style.top = chests[2].top;
+                chest3Link.style.left = chests[2].left;
+                chest3Link.href = chests[2].href;
+
+                // Обновляем активную кнопку
+                levelBtns.forEach((btn, idx) => {
+                    if (idx === levelIndex) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Обработчики кнопок
+            levelBtns.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    setLevel(index);
+                });
+            });
+
+            // Анимация ушек медвежонка
+            const bear = document.querySelector('.greeting-bear .bear');
+            if (bear) {
+                bear.addEventListener('mouseenter', () => {
+                    const ears = bear.querySelectorAll('.ear');
+                    ears.forEach(ear => {
+                        ear.style.transition = 'transform 0.2s';
+                        ear.style.transform += ' rotate(10deg) scale(1.05)';
+                    });
+                });
+                bear.addEventListener('mouseleave', () => {
+                    const ears = bear.querySelectorAll('.ear');
+                    ears.forEach(ear => {
+                        ear.style.transform = ear.classList.contains('left') ? 'rotate(-25deg)' : 'rotate(25deg)';
+                    });
+                });
+            }
+
+            // Анимация цветов
+            const flowers = document.querySelectorAll('.flower');
+            flowers.forEach((flower, index) => {
+                flower.style.animationDelay = (index * 0.2) + 's';
+            });
+
+            // Устанавливаем начальный уровень
+            setLevel(0);
+        })();
+    </script>
+
+    <style>
+        a { -webkit-tap-highlight-color: transparent; }
+        .map-container a {
+            pointer-events: auto;
+        }
+    </style>
+</body>
+</html>

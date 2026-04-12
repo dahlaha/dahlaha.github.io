@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Медвежонок · Ритмы Картинок</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard', cursive, sans-serif;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30"><circle cx="13" cy="13" r="11" fill="%23ffdb7c" stroke="%23955c1e" stroke-width="2.5"/><circle cx="9" cy="9" r="2" fill="black"/><circle cx="17" cy="9" r="2" fill="black"/><ellipse cx="13" cy="17" rx="5" ry="2.5" fill="%23955c1e" /></svg>') 13 13, auto;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1f4d2b 0%, #3b6e49 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            background: #6c9e5f;
+            border-radius: 70px 70px 50px 50px;
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.6), inset 0 0 30px #c6e6a3;
+            padding: 25px 25px 35px 25px;
+            border: 8px solid #4f7542;
+        }
+
+        /* МЕДВЕЖОНОК */
+        .bear-section {
+            background: #8fc27c;
+            border-radius: 100px 100px 50px 50px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 6px solid #fdebbc;
+            box-shadow: 0 15px 0 #3b642b, inset 0 0 30px #e9f7d3;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bear-avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 160px;
+        }
+
+        .bear-avatar .bear {
+            width: 150px;
+            height: 150px;
+            background: #9b693c;
+            background: radial-gradient(circle at 30% 30%, #d49d62, #7b4d27);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            box-shadow: 0 15px 0 #5f3e22, inset -10px -12px 15px #8b602f;
+            border: 5px solid #573e22;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bear-avatar .ear {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #b8804a;
+            border-radius: 70% 70% 60% 60%;
+            top: -30px;
+            border: 5px solid #573e22;
+        }
+        .bear-avatar .ear.left { left: 1px; transform: rotate(-25deg); }
+        .bear-avatar .ear.right { right: 1px; transform: rotate(25deg); }
+
+        .bear-avatar .face {
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bear-avatar .eyes {
+            display: flex;
+            gap: 32px;
+        }
+        .bear-avatar .eye {
+            width: 20px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid #2d1d0c;
+            position: relative;
+        }
+        .bear-avatar .eye::after {
+            content: '';
+            width: 12px;
+            height: 13px;
+            background: #2f1f0e;
+            border-radius: 50%;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+        }
+        .bear-avatar .nose {
+            width: 30px;
+            height: 20px;
+            background: #4b3119;
+            border-radius: 40% 40% 50% 50%;
+            border: 3px solid #2d1d0c;
+            margin-top: 7px;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: #ffffec;
+            border-radius: 60px 60px 60px 40px;
+            padding: 30px 40px;
+            border: 6px solid #6d4f2c;
+            box-shadow: 15px 18px 0 rgba(0,0,0,0.2), inset 0 0 0 5px #fffed8;
+            max-width: 800px;
+            font-size: 1.7rem;
+            line-height: 1.5;
+            color: #203d16;
+            font-weight: 600;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -30px;
+            bottom: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ffffec;
+            border-radius: 50%;
+            border: 6px solid #6d4f2c;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(45deg);
+            box-shadow: -8px 8px 0 rgba(0,0,0,0.1);
+        }
+
+        /* ПАМЯТКА */
+        .hint-box {
+            background: #fef7d2;
+            border-radius: 50px;
+            padding: 15px 30px;
+            margin: 10px 0 25px;
+            border: 5px solid #ba9b5a;
+            font-size: 1.6rem;
+            text-align: center;
+            box-shadow: inset 0 0 0 5px #fff2bf;
+        }
+
+        /* РИТМИЧЕСКИЕ РИСУНКИ */
+        .rhythm-row {
+            background: #fdf5d6;
+            border-radius: 80px;
+            padding: 20px 30px;
+            margin: 20px 0;
+            border: 6px solid #bc9b5a;
+            box-shadow: 0 12px 0 #7a6234, inset 0 0 0 8px #fff3c9;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .rhythm-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            background: #e6d8b5;
+            border-radius: 60px;
+            padding: 15px 25px;
+            border: 4px solid #9e814b;
+        }
+
+        .rhythm-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            background: #a77b3c;
+            color: #fcf5cf;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 25px;
+            border: 5px solid #fdebaf;
+            box-shadow: 0 6px 0 #5f421e;
+        }
+
+        .rhythm-icons {
+            font-size: 2.4rem;      /* уменьшенный размер */
+            letter-spacing: 8px;
+            background: #fff1d2;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: inset 0 0 0 5px #ffe3a5, 0 8px 0 #b39254;
+            border: 3px solid #846f3e;
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .rhythm-icons .small-note {
+            font-size: 1.8rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* КАРТОЧКИ ПЬЕС (зоны для дропа) */
+        .pieces-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0 20px;
+        }
+
+        .piece-card {
+            background: #fdebca;
+            border-radius: 60px;
+            padding: 20px 15px 25px;
+            border: 6px solid #bd9148;
+            box-shadow: 0 16px 0 #7b592b, inset 0 0 0 7px #fff6dc;
+            width: 250px;
+            text-align: center;
+            transition: 0.1s;
+        }
+
+        .piece-card.drag-over {
+            border: 6px solid #ffd966;
+            background: #fff3d1;
+            transform: scale(1.02);
+        }
+
+        .piece-title {
+            font-size: 1.7rem;
+            font-weight: bold;
+            background: #6f8f4c;
+            color: #fcf5c6;
+            padding: 12px;
+            border-radius: 50px;
+            margin-bottom: 15px;
+            border: 4px solid #3b642b;
+        }
+
+        .play-big-btn {
+            background: #dba959;
+            font-size: 1.8rem;
+            padding: 16px 10px;
+            border-radius: 50px;
+            border: none;
+            border-bottom: 8px solid #8b601f;
+            color: #212e0e;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 8px 0;
+            width: 100%;
+            transition: 0.05s;
+        }
+        .play-big-btn:active {
+            border-bottom-width: 3px;
+            transform: translateY(5px);
+        }
+
+        .drop-slot {
+            min-height: 110px;
+            margin: 10px 0 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .placed-rhythm {
+            background: #ffcf8a;
+            border-radius: 40px;
+            padding: 10px 18px;
+            border: 4px solid #a5661e;
+            font-weight: bold;
+            font-size: 1.6rem;
+            box-shadow: inset 0 0 0 4px #ffeac2;
+            width: 100%;
+        }
+
+        /* ПУЛ РИТМОВ (перетаскиваемые) */
+        .rhythm-pool {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 10px 0 30px;
+        }
+
+        .rhythm-card {
+            background: #b3a1d4;
+            background: linear-gradient(145deg, #cbbae6, #a58dc7);
+            border: 6px solid #7b5fa0;
+            border-radius: 50px;
+            padding: 15px 25px;
+            box-shadow: 0 14px 0 #59447a, inset 0 0 0 6px #e5d5fc;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 220px;
+            user-select: none;
+        }
+        .rhythm-card:active { cursor: grabbing; opacity: 0.8; }
+        .rhythm-card.dragging { opacity: 0.5; }
+
+        .rhythm-card .card-number {
+            font-size: 2.8rem;
+            background: #fdebbc;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #b3823c;
+            font-weight: bold;
+        }
+        .rhythm-card .card-icons {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            background: #fff9e0;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 3px solid #aa8c54;
+        }
+
+        /* КНОПКИ */
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .check-btn {
+            background: #fdd673;
+            font-size: 2.2rem;
+            font-weight: bold;
+            padding: 18px 50px;
+            border-radius: 80px;
+            border: 6px solid #b8782e;
+            box-shadow: 0 14px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
+            color: #2c4d1c;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+        .check-btn:active { transform: translateY(8px); box-shadow: 0 6px 0 #8a5a24, inset 0 0 0 6px #fff2bf; }
+        .feedback-msg {
+            font-size: 2rem;
+            min-height: 3.5rem;
+            color: #fbf5b0;
+            text-shadow: 4px 4px 0 #1c481c;
+            font-weight: bold;
+        }
+        .home-link {
+            display: inline-block;
+            margin: 10px 0;
+            background: #fdebbc;
+            padding: 12px 35px;
+            border-radius: 60px;
+            font-size: 1.8rem;
+            color: #284f18;
+            border: 5px solid #a57c42;
+            box-shadow: 0 8px 0 #6d4f1e;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .reset-small {
+            font-size: 1.5rem;
+            background: #afd69b;
+            padding: 8px 25px;
+            border-radius: 40px;
+            border: 4px solid #527a3e;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper">
+    <!-- ПЕРВЫЙ МЕДВЕЖОНОК: ЗАДАНИЕ -->
+    <div class="bear-section">
+        <div class="bear-avatar">
+            <div class="bear">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="face">
+                    <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                    <div class="nose"></div>
+                </div>
+            </div>
+        </div>
+        <div class="speech-bubble">
+            🐻 <strong>Перед вами три ритмических рисунка.</strong><br>
+            Попробуйте их простучать. 
+        </div>
+    </div>
+
+    <!-- ПАМЯТКА -->
+    <div class="hint-box">
+        💡 <strong>Памятка:</strong> 🏰🌸🌳 (большие значки) — длинные звуки, 
+        ⚡🌱👞 (маленькие значки) — короткие звуки.
+    </div>
+
+    <!-- ТРИ РИТМИЧЕСКИХ РИСУНКА С НОМЕРАМИ -->
+    <div class="rhythm-row">
+        <div class="rhythm-line">
+            <div class="rhythm-number">1</div>
+            <div class="rhythm-icons">
+                <span class="small-note">⚡</span>🏰<span class="small-note">⚡</span>🏰<span class="small-note">⚡</span>🏰<span class="small-note">⚡⚡⚡⚡</span><span class="small-note">⚡</span>🏰<span class="small-note">⚡</span>🏰<span class="small-note">⚡</span>🏰
+        </div>
+        </div>
+        <div class="rhythm-line">
+            <div class="rhythm-number">2</div>
+            <div class="rhythm-icons">🌸<span class="small-note">🌱</span>🌸<span class="small-note">🌱</span>🌸<span class="small-note">🌱🌱🌱🌱🌱🌱</span>🌸<span class="small-note">🌱</span>🌸<span class="small-note">🌱🌱🌱🌱🌱</span></div>
+        </div>
+        <div class="rhythm-line">
+            <div class="rhythm-number">3</div>
+            <div class="rhythm-icons">🌳🌳🌳<span class="small-note">  👞👞👞 👞👞👞 </span>🌳🌳🌳🌳</div>
+        </div>
+    </div>
+
+    <!-- ВТОРОЙ МЕДВЕЖОНОК -->
+    <div class="bear-section">
+        <div class="bear-avatar">
+            <div class="bear">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="face">
+                    <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+                    <div class="nose"></div>
+                </div>
+            </div>
+        </div>
+        <div class="speech-bubble">
+            🐻 <strong>А теперь внимательно послушайте три музыкальных фрагмента
+            из цикла <br> «Картинки с выставки» Мусоргского:<br></strong>
+            «Тюильрийский сад», «Прогулка» и «Старый замок».<br>
+            Перетащите карточку с ритмом к подходящей пьесе!
+        </div>
+    </div>
+
+    <!-- КАРТОЧКИ ПЬЕС (ЗОНЫ ДЛЯ ДРОПА) -->
+    <div class="pieces-container">
+        <!-- Тюильрийский сад -->
+        <div class="piece-card" data-piece="tuileries" id="pieceTuileries">
+            <div class="piece-title">Тюильрийский сад</div>
+            <button class="play-big-btn" data-play="tuileries">🎵 Слушать</button>
+            <div class="drop-slot" id="slotTuileries"></div>
+        </div>
+        <!-- Прогулка -->
+        <div class="piece-card" data-piece="promenade" id="piecePromenade">
+            <div class="piece-title">Прогулка</div>
+            <button class="play-big-btn" data-play="promenade">🎵 Слушать</button>
+            <div class="drop-slot" id="slotPromenade"></div>
+        </div>
+        <!-- Старый замок -->
+        <div class="piece-card" data-piece="oldcastle" id="pieceOldcastle">
+            <div class="piece-title">Старый замок</div>
+            <button class="play-big-btn" data-play="oldcastle">🎵 Слушать</button>
+            <div class="drop-slot" id="slotOldcastle"></div>
+        </div>
+    </div>
+
+    <!-- ПЕРЕТАСКИВАЕМЫЕ КАРТОЧКИ РИТМОВ -->
+    <div class="rhythm-pool" id="rhythmPool">
+        <div class="rhythm-card" draggable="true" data-rhythm="1" id="rhythm1card">
+            <div class="card-number">1</div>
+            <div class="card-icons">⚡🏰⚡🏰</div>
+        </div>
+        <div class="rhythm-card" draggable="true" data-rhythm="2" id="rhythm2card">
+            <div class="card-number">2</div>
+            <div class="card-icons">🌸🌱🌸🌱</div>
+        </div>
+        <div class="rhythm-card" draggable="true" data-rhythm="3" id="rhythm3card">
+            <div class="card-number">3</div>
+            <div class="card-icons">🌳👞🌳👞</div>
+        </div>
+    </div>
+
+    <!-- ПРОВЕРКА -->
+    <div class="action-area">
+        <button class="check-btn" id="checkRhythmMatch">✅ ПРОВЕРИТЬ</button>
+        <div class="feedback-msg" id="matchFeedback"></div>
+        <div>
+            <a href="index.html" class="home-link">🏡 На поляну</a>
+            <button class="reset-small" id="resetPlacements">🔄 Сбросить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- ЗВУКИ (Web Audio) ----------
+        function playPiece(piece) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.35, now);
+            master.connect(ctx.destination);
+            function note(freq, start, dur, wave='triangle') {
+                const osc = ctx.createOscillator();
+                osc.type = wave;
+                osc.frequency.value = freq;
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.2, start);
+                g.gain.exponentialRampToValueAtTime(0.001, start+dur);
+                osc.connect(g); g.connect(master);
+                osc.start(start); osc.stop(start+dur);
+            }
+            if (piece === 'tuileries') {
+                [659, 784, 880, 1046].forEach((f,i) => note(f, now+i*0.18, 0.2, 'sine'));
+                [784, 880].forEach((f,i) => note(f, now+0.8, 0.15));
+            } else if (piece === 'promenade') {
+                [392, 523, 659, 523].forEach((f,i) => note(f, now+i*0.35, 0.3, 'triangle'));
+                note(392, now+1.5, 0.4);
+            } else if (piece === 'oldcastle') {
+                [196, 220, 261, 220].forEach((f,i) => note(f, now+i*0.5, 0.45, 'sawtooth'));
+                note(174, now+2.0, 0.6);
+            }
+        }
+
+        document.querySelectorAll('.play-big-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                playPiece(btn.dataset.play);
+                btn.style.transform = 'scale(0.96)';
+                setTimeout(()=> btn.style.transform='',100);
+            });
+        });
+
+        // ---------- DRAG & DROP ----------
+        const rhythmCards = document.querySelectorAll('.rhythm-card');
+        const pieceCards = document.querySelectorAll('.piece-card');
+        const slots = {
+            tuileries: document.getElementById('slotTuileries'),
+            promenade: document.getElementById('slotPromenade'),
+            oldcastle: document.getElementById('slotOldcastle')
+        };
+
+        // текущие размещения: piece -> rhythm (строка "1","2","3")
+        let placements = {
+            tuileries: null,
+            promenade: null,
+            oldcastle: null
+        };
+
+        // Функция обновления отображения
+        function renderPlacements() {
+            // очищаем слоты
+            for (let piece in slots) {
+                slots[piece].innerHTML = '';
+            }
+            // показываем/скрываем карточки ритмов
+            document.querySelectorAll('.rhythm-card').forEach(card => {
+                const rhythm = card.dataset.rhythm;
+                const used = Object.values(placements).includes(rhythm);
+                card.style.display = used ? 'none' : 'flex';
+            });
+            // заполняем слоты
+            for (let piece in placements) {
+                const rhythm = placements[piece];
+                if (rhythm) {
+                    const placedDiv = document.createElement('div');
+                    placedDiv.className = 'placed-rhythm';
+                    let iconPreview = '';
+                    if (rhythm === '1') iconPreview = '⚡🏰 Ритм 1';
+                    else if (rhythm === '2') iconPreview = '🌸🌱 Ритм 2';
+                    else if (rhythm === '3') iconPreview = '🌳👞 Ритм 3';
+                    placedDiv.textContent = iconPreview;
+                    slots[piece].appendChild(placedDiv);
+                }
+            }
+        }
+
+        // Drag start
+        rhythmCards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                const rhythm = card.dataset.rhythm;
+                if (Object.values(placements).includes(rhythm)) {
+                    e.preventDefault();
+                    return;
+                }
+                e.dataTransfer.setData('text/plain', rhythm);
+                e.dataTransfer.effectAllowed = 'move';
+                card.classList.add('dragging');
+            });
+            card.addEventListener('dragend', (e) => {
+                card.classList.remove('dragging');
+            });
+        });
+
+        // Drag over / drop на пьесы
+        pieceCards.forEach(card => {
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                card.classList.add('drag-over');
+            });
+            card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                const rhythm = e.dataTransfer.getData('text/plain');
+                if (!rhythm) return;
+                const piece = card.dataset.piece;
+
+                // Если ритм уже используется где-то — нельзя
+                if (Object.values(placements).includes(rhythm)) {
+                    alert('Этот ритм уже прикреплён!');
+                    return;
+                }
+                // Если у этой пьесы уже есть ритм — заменяем
+                placements[piece] = rhythm;
+                renderPlacements();
+            });
+        });
+
+        document.addEventListener('dragover', (e) => e.preventDefault());
+        document.addEventListener('drop', (e) => e.preventDefault());
+
+        // Сброс
+        document.getElementById('resetPlacements').addEventListener('click', () => {
+            placements = { tuileries: null, promenade: null, oldcastle: null };
+            renderPlacements();
+            document.getElementById('matchFeedback').textContent = '';
+        });
+
+        // Правильные ответы
+        const correctMap = {
+            tuileries: '1',   // Тюильрийский сад → ритм 1 (быстрый)
+            promenade: '2',    // Прогулка → ритм 2
+            oldcastle: '3'     // Старый замок → ритм 3
+        };
+
+        function fireConfetti() {
+            confetti({particleCount:120, spread:90, origin:{y:0.6}});
+            confetti({particleCount:100, spread:70, origin:{y:0.6,x:0.3}});
+            confetti({particleCount:100, spread:70, origin:{y:0.6,x:0.7}});
+        }
+
+        document.getElementById('checkRhythmMatch').addEventListener('click', () => {
+            const msg = document.getElementById('matchFeedback');
+            if (placements.tuileries === null || placements.promenade === null || placements.oldcastle === null) {
+                msg.textContent = '🐾 Перетащи все три ритма к пьесам!';
+                return;
+            }
+            let allCorrect = true;
+            for (let piece in correctMap) {
+                if (placements[piece] !== correctMap[piece]) {
+                    allCorrect = false;
+                    break;
+                }
+            }
+            if (allCorrect) {
+                msg.textContent = '🎉 Браво! Ритмы подобраны верно! 🎉';
+                fireConfetti();
+            } else {
+                msg.textContent = '🤔 Попробуй еще раз. Послушай внимательнее.';
+            }
+        });
+
+        // Анимация ушек
+        document.querySelectorAll('.bear-avatar .bear').forEach(b => {
+            b.addEventListener('mouseenter', ()=>{
+                b.querySelectorAll('.ear').forEach(e=>e.style.transform+=' rotate(10deg) scale(1.05)');
+            });
+            b.addEventListener('mouseleave', ()=>{
+                b.querySelectorAll('.ear').forEach(e=>{
+                    e.style.transform = e.classList.contains('left')?'rotate(-25deg)':'rotate(25deg)';
+                });
+            });
+        });
+
+        renderPlacements();
+    })();
+</script>
+</body>
+</html>
