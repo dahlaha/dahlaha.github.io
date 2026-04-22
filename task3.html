@@ -509,34 +509,19 @@
 <script>
     (function(){
         // ---------- ЗВУКИ (Web Audio) ----------
+        let currentAudio = null; // Переменная для хранения текущего воспроизведения
         function playPiece(piece) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const ctx = new AudioContext();
-            if (ctx.state === 'suspended') ctx.resume();
-            const now = ctx.currentTime;
-            const master = ctx.createGain();
-            master.gain.setValueAtTime(0.35, now);
-            master.connect(ctx.destination);
-            function note(freq, start, dur, wave='triangle') {
-                const osc = ctx.createOscillator();
-                osc.type = wave;
-                osc.frequency.value = freq;
-                const g = ctx.createGain();
-                g.gain.setValueAtTime(0.2, start);
-                g.gain.exponentialRampToValueAtTime(0.001, start+dur);
-                osc.connect(g); g.connect(master);
-                osc.start(start); osc.stop(start+dur);
+            if (currentAudio) {
+                currentAudio.pause();
             }
             if (piece === 'tuileries') {
-                [659, 784, 880, 1046].forEach((f,i) => note(f, now+i*0.18, 0.2, 'sine'));
-                [784, 880].forEach((f,i) => note(f, now+0.8, 0.15));
+                currentAudio = new Audio('audio/Тюильрийский сад.mp3');
             } else if (piece === 'promenade') {
-                [392, 523, 659, 523].forEach((f,i) => note(f, now+i*0.35, 0.3, 'triangle'));
-                note(392, now+1.5, 0.4);
+                currentAudio = new Audio('audio/Прогулка.mp3');
             } else if (piece === 'oldcastle') {
-                [196, 220, 261, 220].forEach((f,i) => note(f, now+i*0.5, 0.45, 'sawtooth'));
-                note(174, now+2.0, 0.6);
+                currentAudio = new Audio('audio/Старый замок.mp3');
             }
+            currentAudio.play();
         }
 
         document.querySelectorAll('.play-big-btn').forEach(btn => {
@@ -673,6 +658,7 @@
             if (allCorrect) {
                 msg.textContent = '🎉 Браво! Ритмы подобраны верно! 🎉';
                 fireConfetti();
+                currentAudio.pause();
             } else {
                 msg.textContent = '🤔 Попробуй еще раз. Послушай внимательнее.';
             }
