@@ -191,7 +191,7 @@
             overflow: hidden;
         }
 
-        /* ЦВЕТЫ - равномерно распределены по всей полянке */
+        /* ЦВЕТЫ*/
         .flowers {
             position: absolute;
             top: 0;
@@ -204,7 +204,7 @@
 
         .flower {
             position: absolute;
-            font-size: 24px;
+            font-size: 25px;
             filter: drop-shadow(0 4px 2px rgba(0,0,0,0.1));
             animation: gentleSway 5s infinite ease-in-out;
             transform-origin: bottom center;
@@ -293,7 +293,6 @@
             border: 5px solid #7b4f2e;
             border-bottom-width: 10px;
             box-shadow: 0 10px 0 #68411f, inset 0 -3px 8px #fbe1a8, inset 0 3px 8px #ffffdd;
-            cursor: pointer;
             transition: all 0.2s ease;
             z-index: 30;
             display: flex;
@@ -482,9 +481,9 @@
 
     <script>
         (function() {
-            // Конфигурация 4 уровней (полянок)
+            // Конфигурация(полянок)
             const levels = [
-                { // Уровень 0 (начальный)
+                { // Уровень 0
                     message: `🐻 <strong>Ребята, беда!</strong><br>
                         Таинственный Злой Молчун заколдовал наш лес. Птицы перестали петь слаженно, дождь капает как попало, а мои барабаны вообще не стучат!<br><br>
                         Молчун спрятал ритмы в сундуках. Помогите мне их найти, и музыка снова вернется!<br>
@@ -497,14 +496,14 @@
                     ],
                     flowerClass: 'flowers-0'
                 },
-                { // Уровень 1 (новые задания 4-6)
+                { // Уровень 1
                     message: `🐻 <strong>Сегодня мы продолжаем нашу ответственную миссию!</strong><br>
                         Ваш ждут сундучки с новыми заданиями!`,
-                    pathD: "M 120,60 C 250,150 300,250 450,280 C 550,300 650,250 780,320 C 850,360 880,400 920,460",
+                    pathD: "M 90,430 C 250,230 300,250 450,280 C 550,300 650,230 780,230 C 850,230 880,230 940,180",
                     chests: [
-                        { top: '28%', left: '22%', href: 'task4.html' },
-                        { top: '55%', left: '48%', href: 'task5.html' },
-                        { top: '75%', left: '72%', href: 'task6.html' }
+                        { top: '45%', left: '22%', href: 'task4.html' },
+                        { top: '45%', left: '48%', href: 'task5.html' },
+                        { top: '35%', left: '72%', href: 'task6.html' }
                     ],
                     flowerClass: 'flowers-0' // используем те же цветы, но можно создать отдельные классы
                 },
@@ -513,9 +512,9 @@
                         В этих сундуках спрятаны особенные ритмы. Справитесь?`,
                     pathD: "M 60,80 C 180,120 250,300 400,320 C 550,340 680,250 800,350 C 880,400 900,440 940,480",
                     chests: [
-                        { top: '20%', left: '30%', href: 'task4.html' },
-                        { top: '50%', left: '55%', href: 'task5.html' },
-                        { top: '80%', left: '65%', href: 'task6.html' }
+                        { top: '20%', left: '30%', href: 'task7.html' },
+                        { top: '50%', left: '55%', href: 'task8.html' },
+                        { top: '80%', left: '65%', href: 'task9.html' }
                     ],
                     flowerClass: 'flowers-0'
                 },
@@ -524,9 +523,9 @@
                         Слушайте внимательно, ритмы становятся сложнее.`,
                     pathD: "M 100,30 C 200,150 350,200 500,250 C 650,300 750,380 850,420 C 900,440 920,460 950,490",
                     chests: [
-                        { top: '15%', left: '45%', href: 'task4.html' },
-                        { top: '45%', left: '70%', href: 'task5.html' },
-                        { top: '70%', left: '25%', href: 'task6.html' }
+                        { top: '15%', left: '45%', href: 'task10.html' },
+                        { top: '45%', left: '70%', href: 'task11.html' },
+                        { top: '70%', left: '25%', href: 'task12.html' }
                     ],
                     flowerClass: 'flowers-0'
                 }
