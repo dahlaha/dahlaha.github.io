@@ -466,24 +466,70 @@
         "use strict";
 
         // ---------- ЗВУК (Web Audio) ----------
-        let currentAudio = null; // Переменная для хранения текущего воспроизведения
-
         function playMelody(type) {
-            if (currentAudio) {
-                currentAudio.pause();
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.4, now);
+            gainNode.connect(ctx.destination);
+
+            function createOscillator(wave, freq, start, duration, gainVal = 0.25) {
+                const osc = ctx.createOscillator();
+                osc.type = wave;
+                osc.frequency.value = freq;
+                const oscGain = ctx.createGain();
+                oscGain.gain.setValueAtTime(gainVal, start);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+                osc.connect(oscGain);
+                oscGain.connect(gainNode);
+                osc.start(start);
+                osc.stop(start + duration);
             }
 
             if (type === 'polka') {
-                currentAudio = new Audio('audio/Итальянская полька.mp3');
-            } 
-            else if (type === 'march') {
-                currentAudio = new Audio('audio/Футбольный марш.mp3');
-            } 
-            else if (type === 'song') {
-                currentAudio = new Audio('audio/Пусть всегда будет солнце.mp3');
+                const t = now;
+                createOscillator('triangle', 659.25, t, 0.25, 0.22);
+                createOscillator('triangle', 783.99, t+0.25, 0.2, 0.22);
+                createOscillator('triangle', 1046.50, t+0.5, 0.3, 0.24);
+                createOscillator('triangle', 783.99, t+0.8, 0.2, 0.22);
+                createOscillator('triangle', 659.25, t+1.0, 0.3, 0.2);
+                createOscillator('sawtooth', 523.25, t+1.3, 0.2, 0.15);
+                createOscillator('triangle', 659.25, t+1.5, 0.3, 0.2);
+                createOscillator('triangle', 783.99, t+1.8, 0.3, 0.22);
+                createOscillator('sine', 1046.50, t+2.0, 0.4, 0.18);
+            } else if (type === 'march') {
+                const s = now;
+                createOscillator('square', 261.63, s, 0.3, 0.3);
+                createOscillator('square', 329.63, s+0.4, 0.3, 0.28);
+                createOscillator('square', 392.00, s+0.8, 0.3, 0.28);
+                createOscillator('square', 523.25, s+1.2, 0.35, 0.3);
+                createOscillator('triangle', 392.00, s+1.6, 0.25, 0.25);
+                createOscillator('square', 329.63, s+1.9, 0.3, 0.25);
+                createOscillator('sawtooth', 261.63, s+2.2, 0.3, 0.25);
+                const bufferSize = ctx.sampleRate * 0.2;
+                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = noiseBuffer.getChannelData(0);
+                for (let i=0; i<bufferSize; i++) data[i] = Math.random()*2-1;
+                const noise = ctx.createBufferSource();
+                noise.buffer = noiseBuffer;
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.08, s);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, s+0.15);
+                noise.connect(noiseGain);
+                noiseGain.connect(gainNode);
+                noise.start(s); noise.stop(s+0.2);
+            } else if (type === 'song') {
+                const t = now;
+                createOscillator('sine', 392.00, t, 0.35, 0.25);
+                createOscillator('sine', 523.25, t+0.4, 0.3, 0.22);
+                createOscillator('sine', 659.25, t+0.75, 0.3, 0.25);
+                createOscillator('sine', 587.33, t+1.1, 0.3, 0.22);
+                createOscillator('sine', 523.25, t+1.45, 0.35, 0.25);
+                createOscillator('triangle', 392.00, t+1.8, 0.3, 0.2);
+                createOscillator('sine', 523.25, t+2.1, 0.4, 0.3);
             }
-
-            currentAudio.play();
         }
 
         // Кнопки "Слушать"
@@ -648,7 +694,6 @@
 
             if (allCorrect) {
                 msgDiv.textContent = '🎉 Ура! Всё верно! Ритм возвращается! 🎉';
-                currentAudio.pause();
                 fireConfetti();
                 // дополнительные конфетти
                 setTimeout(() => confetti({ particleCount: 80, spread: 70 }), 200);

@@ -248,7 +248,7 @@
         }
 
         .piece-title {
-            font-size: 1.55rem;
+            font-size: 1.7rem;
             font-weight: bold;
             background: #6f8f4c;
             color: #fcf5c6;
@@ -509,19 +509,34 @@
 <script>
     (function(){
         // ---------- ЗВУКИ (Web Audio) ----------
-        let currentAudio = null; // Переменная для хранения текущего воспроизведения
         function playPiece(piece) {
-            if (currentAudio) {
-                currentAudio.pause();
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.35, now);
+            master.connect(ctx.destination);
+            function note(freq, start, dur, wave='triangle') {
+                const osc = ctx.createOscillator();
+                osc.type = wave;
+                osc.frequency.value = freq;
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.2, start);
+                g.gain.exponentialRampToValueAtTime(0.001, start+dur);
+                osc.connect(g); g.connect(master);
+                osc.start(start); osc.stop(start+dur);
             }
             if (piece === 'tuileries') {
-                currentAudio = new Audio('audio/Тюильрийский сад.mp3');
+                [659, 784, 880, 1046].forEach((f,i) => note(f, now+i*0.18, 0.2, 'sine'));
+                [784, 880].forEach((f,i) => note(f, now+0.8, 0.15));
             } else if (piece === 'promenade') {
-                currentAudio = new Audio('audio/Прогулка.mp3');
+                [392, 523, 659, 523].forEach((f,i) => note(f, now+i*0.35, 0.3, 'triangle'));
+                note(392, now+1.5, 0.4);
             } else if (piece === 'oldcastle') {
-                currentAudio = new Audio('audio/Старый замок.mp3');
+                [196, 220, 261, 220].forEach((f,i) => note(f, now+i*0.5, 0.45, 'sawtooth'));
+                note(174, now+2.0, 0.6);
             }
-            currentAudio.play();
         }
 
         document.querySelectorAll('.play-big-btn').forEach(btn => {
@@ -631,9 +646,9 @@
 
         // Правильные ответы
         const correctMap = {
-            tuileries: '2',   // Тюильрийский сад
-            promenade: '3',    // Прогулка
-            oldcastle: '1'     // Старый замок
+            tuileries: '1',   // Тюильрийский сад → ритм 1 (быстрый)
+            promenade: '2',    // Прогулка → ритм 2
+            oldcastle: '3'     // Старый замок → ритм 3
         };
 
         function fireConfetti() {
@@ -658,7 +673,6 @@
             if (allCorrect) {
                 msg.textContent = '🎉 Браво! Ритмы подобраны верно! 🎉';
                 fireConfetti();
-                currentAudio.pause();
             } else {
                 msg.textContent = '🤔 Попробуй еще раз. Послушай внимательнее.';
             }
