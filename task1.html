@@ -473,7 +473,15 @@
                 click(now + timeOffset, isLong);
             });
         }
+        function completeTask() {
+            const currentPage = window.location.pathname.split('/').pop() || 'task1.html';
+            const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
 
+            if (!completedTasks.includes(currentPage)) {
+                completedTasks.push(currentPage);
+                localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+            }
+        }
         // Отрисовка текущего ритма
         function renderRhythm() {
             const rhythm = rhythms[currentIndex];
@@ -514,6 +522,36 @@
                     Он самый сложный. Справитесь?`;
             }
         }
+        
+        function fireConfetti() {
+            // Проверяем, что confetti загружен
+            if (typeof confetti !== 'function') {
+                console.error('Confetti не загружен');
+                return;
+            }
+            
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.3 }
+                });
+            }, 100);
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.7 }
+                });
+            }, 200);
+        }
 
         // Обработчики кнопок
         prevBtn.addEventListener('click', () => {
@@ -530,18 +568,14 @@
                 renderRhythm();
                 completionMessage.textContent = '';
             } else if (currentIndex === rhythms.length - 1) {
-                // Завершение
-                completionMessage.textContent = '🎉 Отлично! Первое задание выполнено! 🎉';
+                completionMessage.textContent = '🎉 Отлично! Задание выполнено! 🎉';
                 nextBtn.disabled = true;
                 prevBtn.disabled = true;
-                messageBubble.innerHTML = `🐻 <strong>Молодцы, ребята!</strong><br>
-                    Вы отлично справились с ритмами! Возвращайтесь на поляну за следующим заданием.`;
-                
-                // Конфетти
-                if (typeof confetti === 'function') {
-                    confetti({particleCount: 120, spread: 80});
-                    setTimeout(() => confetti({particleCount: 80}), 200);
-                }
+
+                // 👈 СОХРАНЯЕМ ПРОГРЕСС
+                completeTask();
+
+                fireConfetti();
             }
         });
 
@@ -564,7 +598,7 @@
                 });
             });
         });
-
+        
         // Инициализация
         renderRhythm();
     })();

@@ -466,11 +466,13 @@
         "use strict";
 
         // ---------- ЗВУК (Web Audio) ----------
-        let currentAudio = null; // Переменная для хранения текущего воспроизведения
+        let currentAudio = null;
 
         function playMelody(type) {
+            // Останавливаем текущее воспроизведение
             if (currentAudio) {
                 currentAudio.pause();
+                currentAudio.currentTime = 0;
             }
 
             if (type === 'polka') {
@@ -483,13 +485,18 @@
                 currentAudio = new Audio('audio/Пусть всегда будет солнце.mp3');
             }
 
-            currentAudio.play();
+            if (currentAudio) {
+                currentAudio.play().catch(err => {
+                    console.log('Ошибка воспроизведения:', err);
+                });
+            }
         }
 
         // Кнопки "Слушать"
         document.querySelectorAll('.play-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 const melody = btn.dataset.play;
                 playMelody(melody);
                 const card = btn.closest('.music-card');
@@ -506,13 +513,12 @@
             dance: document.getElementById('slotDance'),
             march: document.getElementById('slotMarch')
         };
-        const pool = document.getElementById('musicPool');
 
         // Сохраняем соответствие карточка -> жанр
         let currentPlacement = {
-            polka: null,   // 'dance'
-            march: null,   // 'march'
-            song: null     // 'song'
+            polka: null,
+            march: null,
+            song: null
         };
 
         // Функция обновления отображения слотов
@@ -521,7 +527,8 @@
             for (let key in slots) {
                 slots[key].innerHTML = '';
             }
-            // Прячем карточки, которые уже размещены
+            
+            // Показываем или скрываем карточки
             document.querySelectorAll('.music-card').forEach(card => {
                 const melody = card.dataset.melody;
                 if (currentPlacement[melody] !== null) {
@@ -562,6 +569,7 @@
                 e.dataTransfer.effectAllowed = 'move';
                 card.classList.add('dragging');
             });
+            
             card.addEventListener('dragend', (e) => {
                 card.classList.remove('dragging');
             });
@@ -574,26 +582,28 @@
                 e.dataTransfer.dropEffect = 'move';
                 zone.classList.add('drag-over');
             });
-            zone.addEventListener('dragleave', () => {
+            
+            zone.addEventListener('dragleave', (e) => {
                 zone.classList.remove('drag-over');
             });
+            
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 zone.classList.remove('drag-over');
+                
                 const melody = e.dataTransfer.getData('text/plain');
                 if (!melody) return;
 
-                const genre = zone.dataset.genre; // 'song', 'dance', 'march'
+                const genre = zone.dataset.genre;
+                
                 // Проверяем, не занята ли уже эта карточка
                 if (currentPlacement[melody] !== null) {
-                    alert('Эта мелодия уже прикреплена!');
                     return;
                 }
 
-                // Проверяем, не занят ли слот другой карточкой того же жанра? разрешаем только одну карточку на жанр
+                // Проверяем, не занят ли слот другой карточкой
                 for (let m in currentPlacement) {
                     if (currentPlacement[m] === genre) {
-                        alert('Этот жанр уже занят другой мелодией! Сначала сбросьте.');
                         return;
                     }
                 }
@@ -604,12 +614,16 @@
             });
         });
 
-        // Предотвращаем стандартное поведение для document
+        // Предотвращаем стандартное поведение
         document.addEventListener('dragover', (e) => e.preventDefault());
         document.addEventListener('drop', (e) => e.preventDefault());
 
         // Сброс размещений
         function resetPlacements() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
             currentPlacement = { polka: null, march: null, song: null };
             renderPlacements();
             document.getElementById('feedbackMsg').textContent = '';
@@ -619,19 +633,55 @@
 
         // Проверка ответа
         const correctMap = {
-            polka: 'dance',   // танец
+            polka: 'dance',
             march: 'march',
             song: 'song'
         };
 
         function fireConfetti() {
-            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6, x: 0.3 } });
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6, x: 0.7 } });
+            // Проверяем, что confetti загружен
+            if (typeof confetti !== 'function') {
+                console.error('Confetti не загружен');
+                return;
+            }
+            
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.3 }
+                });
+            }, 100);
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.7 }
+                });
+            }, 200);
+        }
+
+        // Сохраняем прогресс в localStorage
+        function completeTask() {
+            const currentPage = window.location.pathname.split('/').pop() || 'task1.html';
+            const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+
+            if (!completedTasks.includes(currentPage)) {
+                completedTasks.push(currentPage);
+                localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+            }
         }
 
         document.getElementById('checkAnswer').addEventListener('click', () => {
             const msgDiv = document.getElementById('feedbackMsg');
+            
             // Проверяем, все ли три размещены
             if (currentPlacement.polka === null || currentPlacement.march === null || currentPlacement.song === null) {
                 msgDiv.textContent = '🐾 Распредели все три мелодии!';
@@ -648,10 +698,11 @@
 
             if (allCorrect) {
                 msgDiv.textContent = '🎉 Ура! Всё верно! Ритм возвращается! 🎉';
-                currentAudio.pause();
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
                 fireConfetti();
-                // дополнительные конфетти
-                setTimeout(() => confetti({ particleCount: 80, spread: 70 }), 200);
+                completeTask();
             } else {
                 msgDiv.textContent = '🤔 Попробуй ещё раз! Послушай внимательно.';
             }
@@ -661,7 +712,9 @@
         const bear = document.querySelector('.bear-avatar .bear');
         if(bear) {
             bear.addEventListener('mouseenter', () => {
-                bear.querySelectorAll('.ear').forEach(e => { e.style.transform += ' rotate(10deg) scale(1.05)'; });
+                bear.querySelectorAll('.ear').forEach(e => { 
+                    e.style.transform += ' rotate(10deg) scale(1.05)'; 
+                });
             });
             bear.addEventListener('mouseleave', () => {
                 bear.querySelectorAll('.ear').forEach(e => {
@@ -672,9 +725,6 @@
 
         // Инициализация
         renderPlacements();
-
-        // Дополнительно: разрешить touch-события для мобильных (упрощенно, но drag работает)
-        // Для лучшей поддержки тачскринов можно добавить, но базовый drag работает.
     })();
 </script>
 </body>

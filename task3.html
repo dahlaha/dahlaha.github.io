@@ -627,6 +627,7 @@
             placements = { tuileries: null, promenade: null, oldcastle: null };
             renderPlacements();
             document.getElementById('matchFeedback').textContent = '';
+            currentAudio.pause();
         });
 
         // Правильные ответы
@@ -637,9 +638,44 @@
         };
 
         function fireConfetti() {
-            confetti({particleCount:120, spread:90, origin:{y:0.6}});
-            confetti({particleCount:100, spread:70, origin:{y:0.6,x:0.3}});
-            confetti({particleCount:100, spread:70, origin:{y:0.6,x:0.7}});
+            // Проверяем, что confetti загружен
+            if (typeof confetti !== 'function') {
+                console.error('Confetti не загружен');
+                return;
+            }
+            
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.3 }
+                });
+            }, 100);
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6, x: 0.7 }
+                });
+            }, 200);
+        }
+        
+        // Сохраняем прогресс в localStorage
+        function completeTask() {
+            const currentPage = window.location.pathname.split('/').pop() || 'task1.html';
+            const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+
+            if (!completedTasks.includes(currentPage)) {
+                completedTasks.push(currentPage);
+                localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+            }
         }
 
         document.getElementById('checkRhythmMatch').addEventListener('click', () => {
@@ -657,8 +693,11 @@
             }
             if (allCorrect) {
                 msg.textContent = '🎉 Браво! Ритмы подобраны верно! 🎉';
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
                 fireConfetti();
-                currentAudio.pause();
+                completeTask();
             } else {
                 msg.textContent = '🤔 Попробуй еще раз. Послушай внимательнее.';
             }
