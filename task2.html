@@ -3,161 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Музыкальный квест «Спаси ритм!» — задание «Музыкальные жанры». Научись различать песню, танец и марш, перетаскивая мелодии в правильные категории.">
     <title>Медвежонок · Музыкальные жанры</title>
-    <!-- canvas-confetti CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard', cursive, sans-serif;
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30"><circle cx="13" cy="13" r="11" fill="%23ffdb7c" stroke="%23955c1e" stroke-width="2.5"/><circle cx="9" cy="9" r="2" fill="black"/><circle cx="17" cy="9" r="2" fill="black"/><ellipse cx="13" cy="17" rx="5" ry="2.5" fill="%23955c1e" /></svg>') 13 13, auto;
-        }
-
-        body {
-            background: linear-gradient(145deg, #1f4d2b 0%, #3b6e49 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+        /* ===== УНИКАЛЬНЫЕ СТИЛИ СТРАНИЦЫ ЗАДАНИЯ ===== */
 
         .game-wrapper {
             max-width: 1400px;
-            width: 100%;
-            background: #6c9e5f;
-            border-radius: 70px 70px 50px 50px;
-            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.6), inset 0 0 30px #c6e6a3;
-            padding: 25px 25px 35px 25px;
-            border: 8px solid #4f7542;
         }
 
-        /* Блок с медвежонком */
-        .bear-task-section {
-            background: #8fc27c;
-            border-radius: 100px 100px 50px 50px;
-            padding: 30px 40px;
-            margin-bottom: 30px;
-            border: 6px solid #fdebbc;
-            box-shadow: 0 15px 0 #3b642b, inset 0 0 30px #e9f7d3;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .bear-avatar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 160px;
-        }
-
-        .bear-avatar .bear {
-            width: 150px;
-            height: 150px;
-            background: #9b693c;
-            background: radial-gradient(circle at 30% 30%, #d49d62, #7b4d27);
-            border-radius: 50% 50% 45% 45%;
-            position: relative;
-            box-shadow: 0 15px 0 #5f3e22, inset -10px -12px 15px #8b602f;
-            border: 5px solid #573e22;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .bear-avatar .ear {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: #b8804a;
-            border-radius: 70% 70% 60% 60%;
-            top: -30px;
-            border: 5px solid #573e22;
-        }
-        .bear-avatar .ear.left { left: 1px; transform: rotate(-25deg); }
-        .bear-avatar .ear.right { right: 1px; transform: rotate(25deg); }
-
-        .bear-avatar .face {
-            margin-top: 35px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .bear-avatar .eyes {
-            display: flex;
-            gap: 32px;
-        }
-        .bear-avatar .eye {
-            width: 20px;
-            height: 25px;
-            background: white;
-            border-radius: 50%;
-            border: 3px solid #2d1d0c;
-            position: relative;
-        }
-        .bear-avatar .eye::after {
-            content: '';
-            width: 12px;
-            height: 13px;
-            background: #2f1f0e;
-            border-radius: 50%;
-            position: absolute;
-            top: 4px;
-            left: 4px;
-        }
-        .bear-avatar .nose {
-            width: 30px;
-            height: 20px;
-            background: #4b3119;
-            border-radius: 40% 40% 50% 50%;
-            border: 3px solid #2d1d0c;
-            margin-top: 7px;
-        }
-
-        .speech-bubble {
-            position: relative;
-            background: #ffffec;
-            border-radius: 60px 60px 60px 40px;
-            padding: 30px 40px;
-            border: 6px solid #6d4f2c;
-            box-shadow: 15px 18px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 5px #fffed8;
-            max-width: 750px;
-            font-size: 1.6rem;
-            line-height: 1.5;
-            color: #203d16;
-            font-weight: 600;
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            left: -30px;
-            bottom: 30px;
-            width: 50px;
-            height: 50px;
-            background: #ffffec;
-            border-radius: 50%;
-            border: 6px solid #6d4f2c;
-            border-top-color: transparent;
-            border-right-color: transparent;
-            transform: rotate(45deg);
-            box-shadow: -8px 8px 0 rgba(0,0,0,0.1);
-        }
-
-        /* ЖАНРЫ — зоны для перетаскивания */
+        /* Жанры — зоны для перетаскивания */
         .genre-dropzones {
             display: flex;
             justify-content: center;
             gap: 40px;
-            margin: 30px 0 30px;
+            margin: 30px 0;
             flex-wrap: wrap;
         }
 
@@ -174,16 +35,31 @@
             min-height: 240px;
             transition: all 0.2s;
             position: relative;
+            cursor: default;
         }
 
-        .genre-drop[data-genre="song"] { background: #fff3d1; }
-        .genre-drop[data-genre="dance"] { background: #ffe0f0; }
-        .genre-drop[data-genre="march"] { background: #d9e6d3; }
+        .genre-drop[data-genre="song"] { 
+            background: #fff3d1; 
+        }
+        .genre-drop[data-genre="dance"] { 
+            background: #ffe0f0; 
+        }
+        .genre-drop[data-genre="march"] { 
+            background: #d9e6d3; 
+        }
 
-        .genre-drop span {
+        .genre-drop.drag-over {
+            border: 5px solid #f3ff96;
+            background: #ffffd0 !important;
+            transform: scale(1.02);
+            box-shadow: 0 14px 0 #7e5826, inset 0 0 0 6px #fff0bb;
+        }
+
+        .genre-icon {
             font-size: 5.5rem;
             line-height: 1.2;
             filter: drop-shadow(4px 6px 0 #cfb087);
+            pointer-events: none;
         }
 
         .genre-label {
@@ -193,9 +69,10 @@
             color: #f9f0b8;
             padding: 8px 24px;
             border-radius: 50px;
-            margin: 10px 0 10px;
+            margin: 10px 0;
             border: 3px solid #3f6129;
             box-shadow: inset 0 2px 5px #b1d18b, 0 5px 0 #3b6026;
+            pointer-events: none;
         }
 
         .drop-slot {
@@ -229,21 +106,16 @@
             min-width: 200px;
             user-select: none;
             touch-action: none;
-            transform: translate(0,0);
-            opacity: 1;
             position: relative;
         }
 
         .music-card:active {
             cursor: grabbing;
-            opacity: 0.8;
-            box-shadow: 0 8px 0 #7b4f1f, inset 0 0 0 6px #ffeac2;
-            transform: translateY(8px);
         }
 
         .music-card.dragging {
             opacity: 0.5;
-            transform: scale(0.98);
+            transform: scale(0.95);
             box-shadow: 0 5px 0 #7b4f1f;
         }
 
@@ -251,6 +123,7 @@
             font-size: 4.5rem;
             line-height: 1;
             margin-bottom: 8px;
+            pointer-events: none;
         }
 
         .music-card .music-name {
@@ -278,9 +151,50 @@
             transition: 0.05s linear;
             pointer-events: auto;
         }
+
+        .play-btn:hover {
+            background: #c97845;
+        }
+
         .play-btn:active {
             border-bottom-width: 2px;
             transform: translateY(3px);
+        }
+
+        .play-btn.playing {
+            background: #4caf50;
+            border-bottom-color: #2e7d32;
+            animation: playingPulse 0.5s infinite;
+        }
+
+        @keyframes playingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Карточка в зоне */
+        .placed-card {
+            background: #ffcf8a;
+            border-radius: 40px;
+            padding: 8px 16px;
+            border: 4px solid #ad6d2b;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #2a1d0a;
+            box-shadow: inset 0 0 0 3px #ffeac2;
+            margin-top: 5px;
+            max-width: 180px;
+            height: 120px;
+            text-align: center;
+            animation: placePop 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes placePop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Кнопка проверки и сообщение */
@@ -305,9 +219,21 @@
             margin-bottom: 20px;
         }
 
-        .check-btn:active {
+        .check-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
+        }
+
+        .check-btn:active:not(:disabled) {
             transform: translateY(8px);
             box-shadow: 0 6px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
+        }
+
+        .check-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 14px 0 #8a5a24, inset 0 0 0 6px #fff2bf;
         }
 
         .feedback-message {
@@ -317,76 +243,123 @@
             text-shadow: 4px 4px 0 #1c481c;
             font-weight: bold;
             text-align: center;
+            transition: opacity 0.3s;
         }
 
-        .home-link {
+        .genre-hint {
             display: inline-block;
-            margin-top: 5px;
-            background: #fdebbc;
-            padding: 12px 35px;
-            border-radius: 60px;
-            font-size: 1.8rem;
-            color: #284f18;
-            border: 5px solid #a57c42;
-            box-shadow: 0 8px 0 #6d4f1e;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.1s;
-        }
-
-        .home-link:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 #6d4f1e;
-        }
-
-        /* в drop-зоне отображение прикреплённой карточки */
-        .placed-card {
-            background: #ffcf8a;
+            background: #ffecb3;
+            padding: 4px 15px;
             border-radius: 40px;
-            padding: 8px 16px;
-            border: 4px solid #ad6d2b;
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: #2a1d0a;
-            box-shadow: inset 0 0 0 3px #ffeac2;
-            margin-top: 5px;
-            max-width: 180px;
-            text-align: center;
-        }
-
-        /* адаптив */
-        @media (max-width: 850px) {
-            .bear-task-section { flex-direction: column; }
-            .speech-bubble { font-size: 1.3rem; padding: 20px; }
-            .speech-bubble::after { left: 40px; top: -25px; transform: rotate(135deg); }
-            .genre-drop { min-width: 160px; padding: 15px; }
-            .genre-drop span { font-size: 4rem; }
-            .music-card { min-width: 170px; padding: 15px; }
-        }
-
-        /* подсветка при перетаскивании над зоной */
-        .genre-drop.drag-over {
-            border: 5px solid #f3ff96;
-            background: #ffffd0;
-            transform: scale(1.02);
+            margin-top: 8px;
+            font-size: 1.2rem;
+            border: 2px solid #d4a843;
         }
 
         .reset-small {
             font-size: 1.3rem;
-            margin-left: 15px;
             background: #afd69b;
-            padding: 5px 20px;
+            padding: 8px 25px;
             border-radius: 40px;
             border: 3px solid #527a3e;
             cursor: pointer;
+            font-weight: bold;
+            color: #1c481c;
+            box-shadow: 0 6px 0 #3b642b;
+            transition: 0.08s;
+        }
+
+        .reset-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #3b642b;
+            background: #c5e6b5;
+        }
+
+        .reset-small:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #3b642b;
+        }
+
+        .progress-indicator {
+            font-size: 1.5rem;
+            color: #faf0b0;
+            text-shadow: 2px 2px 0 #3f6d2b;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 850px) {
+            .genre-drop { 
+                min-width: 160px; 
+                padding: 15px; 
+                min-height: 200px;
+            }
+            .genre-icon { 
+                font-size: 4rem; 
+            }
+            .genre-label {
+                font-size: 1.5rem;
+                padding: 6px 18px;
+            }
+            .music-card { 
+                min-width: 170px; 
+                padding: 15px; 
+            }
+            .check-btn {
+                font-size: 1.8rem;
+                padding: 15px 40px;
+            }
+            .feedback-message {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .genre-dropzones {
+                gap: 20px;
+            }
+            .genre-drop {
+                min-width: 140px;
+                padding: 10px;
+                min-height: 180px;
+            }
+            .genre-icon {
+                font-size: 3rem;
+            }
+            .genre-label {
+                font-size: 1.2rem;
+                padding: 5px 15px;
+            }
+            .music-pool {
+                gap: 20px;
+            }
+            .music-card {
+                min-width: 150px;
+                padding: 12px;
+            }
+            .music-card .sound-icon {
+                font-size: 3rem;
+            }
+            .music-card .music-name {
+                font-size: 1.2rem;
+            }
+            .play-btn {
+                font-size: 1rem;
+                padding: 6px 15px;
+            }
+            .check-btn {
+                font-size: 1.5rem;
+                padding: 12px 30px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="game-wrapper">
     <!-- Медвежонок + речь -->
-    <div class="bear-task-section">
-        <div class="bear-avatar">
+    <section class="bear-section" aria-label="Медвежонок даёт задание">
+        <div class="bear-avatar" aria-hidden="true">
             <div class="bear">
                 <div class="ear left"></div>
                 <div class="ear right"></div>
@@ -400,96 +373,160 @@
             🐻 <strong>Ребята, будем выполнять новое задание!</strong><br>
             Музыка бывает разной: песня, марш и танец — это три главных жанра. 
             Прослушайте мелодии и перетащите карточки к подходящему жанру. 
-            <span style="background: #ffecb3; padding: 4px 15px; border-radius: 40px; display: inline-block; margin-top: 8px;">
+            <span class="genre-hint">
                 🎤 песня &nbsp;|&nbsp; 💃 танец &nbsp;|&nbsp; 🥁 марш
             </span>
         </div>
-    </div>
+    </section>
 
     <!-- ЗОНЫ ДЛЯ ПЕРЕТАСКИВАНИЯ (жанры) -->
-    <div class="genre-dropzones">
+    <div class="genre-dropzones" role="list" aria-label="Жанры музыки">
         <!-- Песня -->
-        <div class="genre-drop" data-genre="song" id="dropSong">
-            <span>🎤</span>
+        <div class="genre-drop" data-genre="song" id="dropSong" 
+             role="listitem" aria-label="Жанр: Песня" tabindex="0">
+            <span class="genre-icon" aria-hidden="true">🎤</span>
             <div class="genre-label">ПЕСНЯ</div>
-            <div class="drop-slot" id="slotSong"></div>
+            <div class="drop-slot" id="slotSong" aria-live="polite"></div>
         </div>
         <!-- Танец -->
-        <div class="genre-drop" data-genre="dance" id="dropDance">
-            <span>💃</span>
+        <div class="genre-drop" data-genre="dance" id="dropDance" 
+             role="listitem" aria-label="Жанр: Танец" tabindex="0">
+            <span class="genre-icon" aria-hidden="true">💃</span>
             <div class="genre-label">ТАНЕЦ</div>
-            <div class="drop-slot" id="slotDance"></div>
+            <div class="drop-slot" id="slotDance" aria-live="polite"></div>
         </div>
         <!-- Марш -->
-        <div class="genre-drop" data-genre="march" id="dropMarch">
-            <span>🥁</span>
+        <div class="genre-drop" data-genre="march" id="dropMarch" 
+             role="listitem" aria-label="Жанр: Марш" tabindex="0">
+            <span class="genre-icon" aria-hidden="true">🥁</span>
             <div class="genre-label">МАРШ</div>
-            <div class="drop-slot" id="slotMarch"></div>
+            <div class="drop-slot" id="slotMarch" aria-live="polite"></div>
         </div>
     </div>
 
     <!-- Пул музыкальных карточек (перетаскиваемые) -->
-    <div class="music-pool" id="musicPool">
+    <div class="music-pool" id="musicPool" role="list" aria-label="Мелодии для распределения">
         <!-- Карточка 1: Итальянская полька (Танец) -->
-        <div class="music-card" draggable="true" data-melody="polka" id="cardPolka">
-            <div class="sound-icon">🎵</div>
+        <div class="music-card" draggable="true" data-melody="polka" id="cardPolka"
+             role="listitem" aria-label="Мелодия 1: Итальянская полька">
+            <div class="sound-icon" aria-hidden="true">🎵</div>
             <div class="music-name">1</div>
-            <button class="play-btn" data-play="polka">▶ Слушать</button>
+            <button class="play-btn" data-play="polka" aria-label="Слушать Итальянскую польку">▶ Слушать</button>
         </div>
         <!-- Карточка 2: Марш футболистов (Марш) -->
-        <div class="music-card" draggable="true" data-melody="march" id="cardMarch">
-            <div class="sound-icon">🎵</div>
+        <div class="music-card" draggable="true" data-melody="march" id="cardMarch"
+             role="listitem" aria-label="Мелодия 2: Марш футболистов">
+            <div class="sound-icon" aria-hidden="true">🎵</div>
             <div class="music-name">2</div>
-            <button class="play-btn" data-play="march">▶ Слушать</button>
+            <button class="play-btn" data-play="march" aria-label="Слушать Марш футболистов">▶ Слушать</button>
         </div>
         <!-- Карточка 3: Пусть всегда будет солнце (Песня) -->
-        <div class="music-card" draggable="true" data-melody="song" id="cardSun">
-            <div class="sound-icon">🎵️</div>
+        <div class="music-card" draggable="true" data-melody="song" id="cardSun"
+             role="listitem" aria-label="Мелодия 3: Пусть всегда будет солнце">
+            <div class="sound-icon" aria-hidden="true">🎵</div>
             <div class="music-name">3</div>
-            <button class="play-btn" data-play="song">▶ Слушать</button>
+            <button class="play-btn" data-play="song" aria-label="Слушать песню Пусть всегда будет солнце">▶ Слушать</button>
         </div>
     </div>
 
     <!-- Кнопка проверки и обратная связь -->
     <div class="action-area">
-        <button class="check-btn" id="checkAnswer">🥁 ПРОВЕРИТЬ 🎤</button>
-        <div class="feedback-message" id="feedbackMsg"></div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="index.html" class="home-link">🏡 На поляну</a>
-            <button class="reset-small" id="resetBtn">🔄 Сбросить карточки</button>
+        <div class="progress-indicator" id="progressIndicator" aria-live="polite">
+            Размещено: 0 / 3
+        </div>
+        <button class="check-btn" id="checkAnswer" aria-label="Проверить ответ">
+            🥁 ПРОВЕРИТЬ 🎤
+        </button>
+        <div class="feedback-message" id="feedbackMsg" aria-live="polite"></div>
+        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center;">
+            <a href="index.html" class="home-link" aria-label="Вернуться на поляну">🏡 На поляну</a>
+            <button class="reset-small" id="resetBtn" aria-label="Сбросить все карточки">
+                🔄 Сбросить карточки
+            </button>
         </div>
     </div>
 </div>
+
+<!-- Подключаем confetti в конце body -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1" defer></script>
 
 <script>
     (function(){
         "use strict";
 
-        // ---------- ЗВУК (Web Audio) ----------
-        let currentAudio = null;
+        // Константа — идентификатор текущего задания
+        const TASK_ID = 'task2.html';
 
-        function playMelody(type) {
-            // Останавливаем текущее воспроизведение
+        // ---------- ЗВУК (Web Audio с fallback на HTML5 Audio) ----------
+        let currentAudio = null;
+        let currentPlayBtn = null;
+
+        function stopCurrentAudio() {
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            if (currentPlayBtn) {
+                currentPlayBtn.classList.remove('playing');
+                currentPlayBtn.textContent = '▶ Слушать';
+                currentPlayBtn = null;
+            }
+        }
+
+        function playMelody(type, btnElement) {
+            // Если нажали на ту же кнопку — останавливаем
+            if (currentPlayBtn === btnElement && currentAudio && !currentAudio.paused) {
+                stopCurrentAudio();
+                return;
             }
 
-            if (type === 'polka') {
-                currentAudio = new Audio('audio/Итальянская полька.mp3');
-            } 
-            else if (type === 'march') {
-                currentAudio = new Audio('audio/Футбольный марш.mp3');
-            } 
-            else if (type === 'song') {
-                currentAudio = new Audio('audio/Пусть всегда будет солнце.mp3');
+            // Останавливаем предыдущее воспроизведение
+            stopCurrentAudio();
+
+            let audioFile = '';
+            let melodyName = '';
+
+            switch(type) {
+                case 'polka':
+                    audioFile = 'audio/Итальянская полька.mp3';
+                    melodyName = 'Итальянская полька';
+                    break;
+                case 'march':
+                    audioFile = 'audio/Футбольный марш.mp3';
+                    melodyName = 'Марш футболистов';
+                    break;
+                case 'song':
+                    audioFile = 'audio/Пусть всегда будет солнце.mp3';
+                    melodyName = 'Пусть всегда будет солнце';
+                    break;
+                default:
+                    return;
             }
 
-            if (currentAudio) {
-                currentAudio.play().catch(err => {
-                    console.log('Ошибка воспроизведения:', err);
-                });
-            }
+            currentAudio = new Audio(audioFile);
+            
+            // Обработка ошибок загрузки
+            currentAudio.onerror = () => {
+                alert(`Не удалось загрузить мелодию "${melodyName}". Проверьте файл: ${audioFile}`);
+                stopCurrentAudio();
+            };
+
+            // Визуальная обратная связь
+            currentPlayBtn = btnElement;
+            btnElement.classList.add('playing');
+            btnElement.textContent = '⏸ Остановить';
+
+            currentAudio.play().catch(err => {
+                console.error('Ошибка воспроизведения:', err);
+                alert(`Не удалось воспроизвести "${melodyName}". Попробуйте ещё раз.`);
+                stopCurrentAudio();
+            });
+
+            // Когда аудио закончится — сбрасываем кнопку
+            currentAudio.onended = () => {
+                stopCurrentAudio();
+            };
         }
 
         // Кнопки "Слушать"
@@ -498,10 +535,7 @@
                 e.stopPropagation();
                 e.preventDefault();
                 const melody = btn.dataset.play;
-                playMelody(melody);
-                const card = btn.closest('.music-card');
-                card.style.transform = 'scale(0.97)';
-                setTimeout(() => card.style.transform = '', 100);
+                playMelody(melody, btn);
             });
         });
 
@@ -521,7 +555,9 @@
             song: null
         };
 
-        // Функция обновления отображения слотов
+        let isCompleted = false;
+
+        // Функция обновления отображения слотов и прогресса
         function renderPlacements() {
             // Очищаем слоты
             for (let key in slots) {
@@ -529,14 +565,20 @@
             }
             
             // Показываем или скрываем карточки
+            let placedCount = 0;
             document.querySelectorAll('.music-card').forEach(card => {
                 const melody = card.dataset.melody;
                 if (currentPlacement[melody] !== null) {
                     card.style.display = 'none';
+                    placedCount++;
                 } else {
                     card.style.display = 'flex';
                 }
             });
+
+            // Обновляем индикатор прогресса
+            document.getElementById('progressIndicator').textContent = 
+                `Размещено: ${placedCount} / 3`;
 
             // Заполняем слоты
             for (let melody in currentPlacement) {
@@ -547,23 +589,34 @@
                         const displayDiv = document.createElement('div');
                         displayDiv.className = 'placed-card';
                         let name = '';
-                        if (melody === 'polka') name = 'Итальянская полька';
-                        else if (melody === 'march') name = 'Марш футболистов';
-                        else if (melody === 'song') name = 'Пусть всегда будет солнце';
+                        if (melody === 'polka') name = '🎵 Итальянская полька';
+                        else if (melody === 'march') name = '🥁 Марш футболистов';
+                        else if (melody === 'song') name = '🎤 Пусть всегда будет солнце';
                         displayDiv.textContent = name;
                         slot.appendChild(displayDiv);
                     }
                 }
+            }
+
+            // Если задание выполнено — блокируем изменения
+            if (isCompleted) {
+                document.querySelectorAll('.music-card').forEach(c => {
+                    c.draggable = false;
+                });
             }
         }
 
         // Drag start
         cards.forEach(card => {
             card.addEventListener('dragstart', (e) => {
+                if (isCompleted) {
+                    e.preventDefault();
+                    return;
+                }
                 const melody = card.dataset.melody;
                 if (currentPlacement[melody] !== null) {
                     e.preventDefault();
-                    return false;
+                    return;
                 }
                 e.dataTransfer.setData('text/plain', melody);
                 e.dataTransfer.effectAllowed = 'move';
@@ -578,6 +631,7 @@
         // Drag over drop zones
         dropZones.forEach(zone => {
             zone.addEventListener('dragover', (e) => {
+                if (isCompleted) return;
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
                 zone.classList.add('drag-over');
@@ -590,6 +644,8 @@
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 zone.classList.remove('drag-over');
+                
+                if (isCompleted) return;
                 
                 const melody = e.dataTransfer.getData('text/plain');
                 if (!melody) return;
@@ -604,13 +660,119 @@
                 // Проверяем, не занят ли слот другой карточкой
                 for (let m in currentPlacement) {
                     if (currentPlacement[m] === genre) {
-                        return;
+                        // Возвращаем старую карточку в пул
+                        currentPlacement[m] = null;
+                        break;
                     }
                 }
 
                 // Сохраняем размещение
                 currentPlacement[melody] = genre;
                 renderPlacements();
+                
+                // Очищаем сообщение
+                document.getElementById('feedbackMsg').textContent = '';
+            });
+        });
+
+        // ===== TOUCH SUPPORT =====
+        let draggedElement = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchOffsetX = 0;
+        let touchOffsetY = 0;
+        let originalPosition = null;
+
+        cards.forEach(card => {
+            card.addEventListener('touchstart', (e) => {
+                if (isCompleted) return;
+                const melody = card.dataset.melody;
+                if (currentPlacement[melody] !== null) return;
+                
+                // Не перетаскиваем, если нажали на кнопку
+                if (e.target.classList.contains('play-btn')) return;
+                
+                draggedElement = card;
+                const touch = e.touches[0];
+                const rect = card.getBoundingClientRect();
+                touchOffsetX = touch.clientX - rect.left;
+                touchOffsetY = touch.clientY - rect.top;
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                
+                originalPosition = {
+                    position: card.style.position,
+                    top: card.style.top,
+                    left: card.style.left,
+                    zIndex: card.style.zIndex
+                };
+                
+                card.style.position = 'fixed';
+                card.style.zIndex = '1000';
+                card.style.top = (touch.clientY - touchOffsetY) + 'px';
+                card.style.left = (touch.clientX - touchOffsetX) + 'px';
+                card.classList.add('dragging');
+                
+                e.preventDefault();
+            });
+
+            card.addEventListener('touchmove', (e) => {
+                if (!draggedElement || draggedElement !== card) return;
+                
+                const touch = e.touches[0];
+                card.style.top = (touch.clientY - touchOffsetY) + 'px';
+                card.style.left = (touch.clientX - touchOffsetX) + 'px';
+                
+                // Подсветка зон при наведении
+                const elementUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+                dropZones.forEach(z => z.classList.remove('drag-over'));
+                if (elementUnder) {
+                    const dropZone = elementUnder.closest('.genre-drop');
+                    if (dropZone) {
+                        dropZone.classList.add('drag-over');
+                    }
+                }
+                
+                e.preventDefault();
+            });
+
+            card.addEventListener('touchend', (e) => {
+                if (!draggedElement || draggedElement !== card) return;
+                
+                dropZones.forEach(z => z.classList.remove('drag-over'));
+                
+                const touch = e.changedTouches[0];
+                const elementUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                if (elementUnder) {
+                    const dropZone = elementUnder.closest('.genre-drop');
+                    if (dropZone) {
+                        const genre = dropZone.dataset.genre;
+                        const melody = card.dataset.melody;
+                        
+                        // Освобождаем занятый слот
+                        for (let m in currentPlacement) {
+                            if (currentPlacement[m] === genre) {
+                                currentPlacement[m] = null;
+                                break;
+                            }
+                        }
+                        
+                        currentPlacement[melody] = genre;
+                        renderPlacements();
+                        document.getElementById('feedbackMsg').textContent = '';
+                    }
+                }
+                
+                // Возвращаем карточку
+                card.style.position = originalPosition?.position || '';
+                card.style.top = originalPosition?.top || '';
+                card.style.left = originalPosition?.left || '';
+                card.style.zIndex = originalPosition?.zIndex || '';
+                card.classList.remove('dragging');
+                
+                draggedElement = null;
+                originalPosition = null;
             });
         });
 
@@ -620,16 +782,24 @@
 
         // Сброс размещений
         function resetPlacements() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio = null;
-            }
+            stopCurrentAudio();
+            isCompleted = false;
             currentPlacement = { polka: null, march: null, song: null };
             renderPlacements();
             document.getElementById('feedbackMsg').textContent = '';
+            document.getElementById('checkAnswer').disabled = false;
+            
+            // Возвращаем draggable
+            document.querySelectorAll('.music-card').forEach(c => {
+                c.draggable = true;
+            });
         }
 
-        document.getElementById('resetBtn').addEventListener('click', resetPlacements);
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (isCompleted || Object.values(currentPlacement).some(v => v !== null)) {
+                resetPlacements();
+            }
+        });
 
         // Проверка ответа
         const correctMap = {
@@ -639,9 +809,8 @@
         };
 
         function fireConfetti() {
-            // Проверяем, что confetti загружен
             if (typeof confetti !== 'function') {
-                console.error('Confetti не загружен');
+                console.warn('Confetti ещё не загружен');
                 return;
             }
             
@@ -670,21 +839,21 @@
 
         // Сохраняем прогресс в localStorage
         function completeTask() {
-            const currentPage = window.location.pathname.split('/').pop() || 'task1.html';
             const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
 
-            if (!completedTasks.includes(currentPage)) {
-                completedTasks.push(currentPage);
+            if (!completedTasks.includes(TASK_ID)) {
+                completedTasks.push(TASK_ID);
                 localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
             }
         }
 
         document.getElementById('checkAnswer').addEventListener('click', () => {
             const msgDiv = document.getElementById('feedbackMsg');
-            
+
             // Проверяем, все ли три размещены
-            if (currentPlacement.polka === null || currentPlacement.march === null || currentPlacement.song === null) {
-                msgDiv.textContent = '🐾 Распредели все три мелодии!';
+            const placedCount = Object.values(currentPlacement).filter(v => v !== null).length;
+            if (placedCount < 3) {
+                msgDiv.textContent = `🐾 Распредели все три мелодии! Осталось: ${3 - placedCount}`;
                 return;
             }
 
@@ -697,34 +866,57 @@
             }
 
             if (allCorrect) {
+                isCompleted = true;
                 msgDiv.textContent = '🎉 Ура! Всё верно! Ритм возвращается! 🎉';
-                if (currentAudio) {
-                    currentAudio.pause();
-                }
+                stopCurrentAudio();
+
+                // Блокируем перетаскивание
+                document.querySelectorAll('.music-card').forEach(c => {
+                    c.draggable = false;
+                });
+
+                // Всегда показываем конфетти, но сохраняем прогресс только один раз
                 fireConfetti();
-                completeTask();
+                completeTask(); // completeTask сама проверит, сохранять ли прогресс
             } else {
                 msgDiv.textContent = '🤔 Попробуй ещё раз! Послушай внимательно.';
+                // Если неправильно — сбрасываем блокировку, чтобы можно было исправить
+                isCompleted = false;
             }
         });
 
-        // Медвежьи ушки
-        const bear = document.querySelector('.bear-avatar .bear');
-        if(bear) {
-            bear.addEventListener('mouseenter', () => {
-                bear.querySelectorAll('.ear').forEach(e => { 
-                    e.style.transform += ' rotate(10deg) scale(1.05)'; 
-                });
+        // Клавиатурное управление для зон
+        dropZones.forEach(zone => {
+            zone.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // Активируем зону для следующего перетаскивания
+                    zone.classList.add('drag-over');
+                    setTimeout(() => zone.classList.remove('drag-over'), 500);
+                }
             });
-            bear.addEventListener('mouseleave', () => {
-                bear.querySelectorAll('.ear').forEach(e => {
-                    e.style.transform = e.classList.contains('left') ? 'rotate(-25deg)' : 'rotate(25deg)';
-                });
+        });
+
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
+        renderPlacements();
+
+        // Проверяем, было ли задание уже выполнено
+        const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+        if (completedTasks.includes(TASK_ID)) {
+            // Если уже выполнено — показываем результат
+            isCompleted = true;
+            currentPlacement = {
+                polka: 'dance',
+                march: 'march',
+                song: 'song'
+            };
+            renderPlacements();
+            document.getElementById('feedbackMsg').textContent = '🎉 Это задание уже выполнено! Молодцы! 🎉';
+            document.getElementById('checkAnswer').disabled = true;
+            document.querySelectorAll('.music-card').forEach(c => {
+                c.draggable = false;
             });
         }
-
-        // Инициализация
-        renderPlacements();
     })();
 </script>
 </body>

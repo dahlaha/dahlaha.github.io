@@ -1,0 +1,386 @@
+/* ===== ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ СТРАНИЦ КВЕСТА ===== */
+
+:root {
+    --green-dark: #1f4d2b;
+    --green-mid: #3b6e49;
+    --green-light: #6c9e5f;
+    --brown-base: #9b693c;
+    --brown-dark: #573e22;
+    --brown-light: #7b4f2e;
+    --cream: #ffffec;
+    --gold: #ffd700;
+    --text-dark: #203d16;
+    --text-brown: #4f2105;
+    --button-primary: #fdd673;
+    --button-accent: #ffb37c;
+    --shadow-large: 0 25px 35px rgba(0, 0, 0, 0.6);
+    --shadow-medium: 0 15px 18px rgba(0, 0, 0, 0.3);
+    --border-radius-xl: 70px;
+    --border-radius-lg: 50px;
+    --border-radius-md: 30px;
+    --border-radius-sm: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Comic Neue', 'Chalkboard', cursive, sans-serif;
+}
+
+/* Кастомный курсор только для десктопов с мышью */
+@media (hover: hover) and (pointer: fine) {
+    * {
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="30" viewBox="0 0 26 30"><circle cx="13" cy="13" r="11" fill="%23ffdb7c" stroke="%23955c1e" stroke-width="2.5"/><circle cx="9" cy="9" r="2" fill="black"/><circle cx="17" cy="9" r="2" fill="black"/><ellipse cx="13" cy="17" rx="5" ry="2.5" fill="%23955c1e" /></svg>') 13 13, auto;
+    }
+}
+
+/* Интерактивные элементы с pointer */
+a, 
+button, 
+.nav-btn, 
+.play-btn, 
+.home-link, 
+.level-btn, 
+.reset-locks-btn, 
+.chest,
+[role="button"] {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+body {
+    background: linear-gradient(145deg, var(--green-dark) 0%, var(--green-mid) 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-wrapper {
+    max-width: 1300px;
+    width: 100%;
+    background: var(--green-light);
+    border-radius: var(--border-radius-xl) var(--border-radius-xl) var(--border-radius-lg) var(--border-radius-lg);
+    box-shadow: var(--shadow-large), inset 0 0 30px #c6e6a3;
+    padding: 25px 25px 35px 25px;
+    border: 8px solid #4f7542;
+    position: relative;
+}
+
+/* ===== ОБЩИЙ МЕДВЕЖОНОК ===== */
+.bear-section {
+    background: #8fc27c;
+    border-radius: 100px 100px var(--border-radius-lg) var(--border-radius-lg);
+    padding: 30px 40px;
+    margin-bottom: 30px;
+    border: 6px solid #fdebbc;
+    box-shadow: 0 15px 0 #3b642b, inset 0 0 30px #e9f7d3;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.bear-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 160px;
+}
+
+.bear-avatar .bear {
+    width: 150px;
+    height: 150px;
+    background: var(--brown-base);
+    background: radial-gradient(circle at 30% 30%, #d49d62, #7b4d27);
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 15px 0 #5f3e22, inset -10px -12px 15px #8b602f;
+    border: 5px solid var(--brown-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.bear-avatar .bear:hover {
+    transform: scale(1.03);
+}
+
+.bear-avatar .ear {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #b8804a;
+    border-radius: 70% 70% 60% 60%;
+    top: -30px;
+    border: 5px solid var(--brown-dark);
+    transition: transform 0.2s;
+}
+
+.bear-avatar .ear.left { 
+    left: 1px; 
+    transform: rotate(-25deg); 
+}
+
+.bear-avatar .ear.right { 
+    right: 1px; 
+    transform: rotate(25deg); 
+}
+
+.bear-avatar .bear:hover .ear {
+    transform: scale(1.05);
+}
+
+.bear-avatar .bear:hover .ear.left { 
+    transform: rotate(-15deg) scale(1.05); 
+}
+
+.bear-avatar .bear:hover .ear.right { 
+    transform: rotate(15deg) scale(1.05); 
+}
+
+.bear-avatar .face {
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bear-avatar .eyes {
+    display: flex;
+    gap: 32px;
+}
+
+.bear-avatar .eye {
+    width: 20px;
+    height: 25px;
+    background: white;
+    border-radius: 50%;
+    border: 3px solid #2d1d0c;
+    position: relative;
+}
+
+.bear-avatar .eye::after {
+    content: '';
+    width: 12px;
+    height: 13px;
+    background: #2f1f0e;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+.bear-avatar .nose {
+    width: 30px;
+    height: 20px;
+    background: #4b3119;
+    border-radius: 40% 40% 50% 50%;
+    border: 3px solid #2d1d0c;
+    margin-top: 7px;
+}
+
+/* Облачко с текстом */
+.speech-bubble {
+    position: relative;
+    background: var(--cream);
+    border-radius: 60px 60px 60px 40px;
+    padding: 30px 40px;
+    border: 6px solid #6d4f2c;
+    box-shadow: 15px 18px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 5px #fffed8;
+    max-width: 700px;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+    font-weight: 600;
+    flex: 1;
+    min-width: 300px;
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    left: -30px;
+    bottom: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--cream);
+    border-radius: 50%;
+    border: 6px solid #6d4f2c;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    transform: rotate(45deg);
+    box-shadow: -8px 8px 0 rgba(0,0,0,0.1);
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); background: #ffa25e; }
+}
+
+.alert-badge {
+    display: inline-block;
+    background: var(--button-accent);
+    border-radius: 40px;
+    padding: 10px 30px;
+    margin-top: 15px;
+    font-size: 1.8rem;
+    border: 4px solid #b1410e;
+    color: var(--text-brown);
+    animation: pulse 2.0s infinite;
+}
+
+/* ===== ОБЩИЕ КНОПКИ ===== */
+.btn-primary {
+    background: var(--button-primary);
+    font-weight: bold;
+    border-radius: 60px;
+    border: 6px solid #b8782e;
+    box-shadow: 0 12px 0 #8a5a24, inset 0 0 0 5px #fff2bf;
+    color: #2c4d1c;
+    transition: 0.08s;
+    font-size: 1.5rem;
+    padding: 12px 35px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 0 #8a5a24, inset 0 0 0 5px #fff2bf;
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(6px);
+    box-shadow: 0 6px 0 #8a5a24, inset 0 0 0 5px #fff2bf;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    transform: none;
+    box-shadow: 0 12px 0 #8a5a24, inset 0 0 0 5px #fff2bf;
+}
+
+/* Кнопка возврата на поляну */
+.home-link {
+    display: inline-block;
+    margin-top: 10px;
+    background: #fdebbc;
+    padding: 12px 35px;
+    border-radius: 50px;
+    font-size: 1.6rem;
+    color: #284f18;
+    border: 5px solid #a57c42;
+    box-shadow: 0 8px 0 #6d4f1e;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.08s;
+}
+
+.home-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 0 #6d4f1e;
+}
+
+.home-link:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #6d4f1e;
+}
+
+/* Кнопка сброса/обновления */
+.reset-btn {
+    background: #8fc27c;
+    border: 4px solid #4f7542;
+    border-radius: 40px;
+    padding: 10px 25px;
+    color: #1c481c;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 6px 0 #3b642b;
+    transition: 0.08s;
+}
+
+.reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #3b642b;
+}
+
+.reset-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #3b642b;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 800px) {
+    .bear-section { 
+        flex-direction: column; 
+        padding: 25px;
+    }
+    
+    .speech-bubble { 
+        font-size: 1.2rem; 
+        padding: 20px; 
+    }
+    
+    .speech-bubble::after { 
+        left: 40px; 
+        top: -25px; 
+        transform: rotate(135deg); 
+    }
+    
+    .home-link {
+        font-size: 1.3rem;
+        padding: 10px 25px;
+    }
+    
+    .btn-primary {
+        font-size: 1.2rem;
+        padding: 10px 25px;
+    }
+    
+    .reset-btn {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+    
+    .alert-badge {
+        font-size: 1.4rem;
+        padding: 8px 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        padding: 10px;
+    }
+    
+    .game-wrapper {
+        padding: 15px;
+    }
+    
+    .bear-section {
+        padding: 15px;
+    }
+    
+    .speech-bubble {
+        font-size: 1rem;
+        padding: 15px;
+    }
+    
+    .home-link {
+        font-size: 1.1rem;
+        padding: 8px 20px;
+    }
+    
+    .btn-primary {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+}
