@@ -419,28 +419,35 @@
                         Таинственный Злой Молчун заколдовал наш лес. Птицы перестали петь слаженно, дождь капает как попало, а мои барабаны вообще не стучат!<br><br>
                         Молчун спрятал ритмы в сундуках. Помогите мне их найти, и музыка снова вернется!<br>
                         <span class="alert-badge">👇 Жми на сундуки внизу! 👇</span>`,
+                    completedMessage: `🐻 <strong>Ура! Мы справились!</strong><br>
+                        Все сундуки на этой полянке открыты! Музыка возвращается в лес!<br>
+                        <span class="alert-badge">Переходи на следующую поляну!</span>`,
                     pathD: "M 80,40 C 150,100 180,180 220,250 C 260,320 320,360 400,370 C 500,380 620,360 720,380 C 800,395 870,420 920,450",
                     chests: [
                         { id: 'chest1', top: '23%', left: '15%', href: 'task1.html' },
-                        { id: 'chest2', top: '60%', left: '38%', href: 'task2.html' },
-                        { id: 'chest3', top: '68%', left: '78%', href: 'task3.html' }
+                        { id: 'chest2', top: '65%', left: '38%', href: 'task2.html' },
+                        { id: 'chest3', top: '70%', left: '78%', href: 'task3.html' }
                     ],
                     flowerClass: 'flowers-0'
                 },
                 {   // Поляна 2
                     message: `🐻 <strong>Сегодня мы продолжаем нашу ответственную миссию!</strong><br>
                         Ваш ждут сундучки с новыми заданиями!`,
+                    completedMessage: `🐻 <strong>Ура! Мы справились!</strong><br>
+                        Все сундуки на этой поляне открыты! Музыка становится громче!`,
                     pathD: "M 90,430 C 250,230 300,250 450,280 C 550,300 650,230 780,230 C 850,230 880,230 940,180",
                     chests: [
-                        { id: 'chest1', top: '45%', left: '22%', href: 'task4.html' },
-                        { id: 'chest2', top: '45%', left: '48%', href: 'task5.html' },
-                        { id: 'chest3', top: '35%', left: '72%', href: 'task6.html' }
+                        { id: 'chest1', top: '65%', left: '15%', href: 'task4.html' },
+                        { id: 'chest2', top: '50%', left: '48%', href: 'task5.html' },
+                        { id: 'chest3', top: '40%', left: '80%', href: 'task6.html' }
                     ],
                     flowerClass: 'flowers-0'
                 },
                 {   // Поляна 3
                     message: `🐻 <strong>Отлично! Ещё немного — и лес зазвучит!</strong><br>
                         В этих сундуках спрятаны особенные ритмы. Справитесь?`,
+                    completedMessage: `🐻 <strong>Ура! Мы справились!</strong><br>
+                        Все сундуки на этой поляне открыты! Лес почти проснулся!`,
                     pathD: "M 60,80 C 180,120 250,300 400,320 C 550,340 680,250 800,350 C 880,400 900,440 940,480",
                     chests: [
                         { id: 'chest1', top: '20%', left: '30%', href: 'task7.html' },
@@ -452,6 +459,8 @@
                 {   // Поляна 4
                     message: `🐻 <strong>Последние сундуки! Вы почти вернули музыку!</strong><br>
                         Слушайте внимательно, ритмы становятся сложнее.`,
+                    completedMessage: `🐻 <strong>Ура! Мы справились!</strong><br>
+                        Все сундуки открыты! Музыка полностью вернулась в лес! Спасибо вам!`,
                     pathD: "M 100,30 C 200,150 350,200 500,250 C 650,300 750,380 850,420 C 900,440 920,460 950,490",
                     chests: [
                         { id: 'chest1', top: '15%', left: '45%', href: 'task10.html' },
@@ -463,10 +472,10 @@
             ];
 
             let currentLevel = 0;
-            
+
             const urlParams = new URLSearchParams(window.location.search);
             const fromLevel = parseInt(urlParams.get('level')) || 0;
-            
+
             const bearMessage = document.getElementById('bearMessage');
             const pathBorder = document.getElementById('pathBorder');
             const pathMain = document.getElementById('pathMain');
@@ -479,13 +488,16 @@
             const chest3 = document.getElementById('chest3');
             const levelBtns = document.querySelectorAll('.level-btn');
             const resetLocksBtn = document.getElementById('resetLocksBtn');
+            const infoBar = document.querySelector('.info-bar');
 
             function setLevel(levelIndex) {
                 currentLevel = levelIndex;
                 const level = levels[levelIndex];
                 if (!level) return;
 
+                // Показываем обычное сообщение при смене уровня (потом обновится в checkCompletedTasks)
                 bearMessage.innerHTML = level.message;
+
                 pathBorder.setAttribute('d', level.pathD);
                 pathMain.setAttribute('d', level.pathD);
                 pathDash.setAttribute('d', level.pathD);
@@ -495,24 +507,13 @@
 
                 chestLinks.forEach((link, index) => {
                     const chestConfig = chests[index];
-                    
-                    // Очищаем все inline-стили позиционирования
+
                     link.style.cssText = '';
-                    
-                    // Удаляем все классы позиций
                     link.classList.remove('chest-pos-1', 'chest-pos-2', 'chest-pos-3');
-                    
-                    // Устанавливаем href
                     link.href = chestConfig.href;
-                    
-                    // Устанавливаем top и left
                     link.style.top = chestConfig.top;
                     link.style.left = chestConfig.left;
-                    
-                    // Возвращаем transform для центрирования
                     link.style.transform = 'translate(-50%, -50%)';
-                    
-                    // Восстанавливаем остальные необходимые стили
                     link.style.position = 'absolute';
                     link.style.zIndex = '30';
                     link.style.textDecoration = 'none';
@@ -528,46 +529,64 @@
                     }
                 });
 
-                // Проверяем замки после смены уровня
+                // Проверяем замки и обновляем сообщение после смены уровня
                 setTimeout(checkCompletedTasks, 100);
             }
 
             function checkCompletedTasks() {
                 const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
                 const level = levels[currentLevel];
-                
+
                 // Сначала убираем класс unlocked со всех сундуков
                 [chest1, chest2, chest3].forEach(chest => {
                     chest.classList.remove('unlocked');
                 });
 
                 // Проверяем каждый сундук на текущей поляне
+                let unlockedCount = 0;
                 const chests = [chest1, chest2, chest3];
                 level.chests.forEach((chestConfig, index) => {
                     if (completedTasks.includes(chestConfig.href)) {
                         chests[index].classList.add('unlocked');
+                        unlockedCount++;
                     }
                 });
+
+                // Если все сундуки открыты — показываем победное сообщение
+                if (unlockedCount === level.chests.length && unlockedCount > 0) {
+                    bearMessage.innerHTML = level.completedMessage;
+                    if (infoBar) {
+                        infoBar.textContent = '🎉 Все сундуки открыты! Музыка возвращается! 🎉';
+                    }
+                } else {
+                    bearMessage.innerHTML = level.message;
+                    if (infoBar) {
+                        infoBar.textContent = '🎵 Открывай сундуки — возвращай ритм в лес! 🎵';
+                    }
+                }
             }
 
             // Сброс замков на текущей поляне
             resetLocksBtn.addEventListener('click', () => {
                 const level = levels[currentLevel];
                 const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
-                
-                // Удаляем задания текущей поляны из выполненных
+
                 const updatedTasks = completedTasks.filter(task => {
                     return !level.chests.some(chest => chest.href === task);
                 });
-                
+
                 localStorage.setItem('completedTasks', JSON.stringify(updatedTasks));
-                
-                // Убираем класс unlocked с сундуков
+
                 [chest1, chest2, chest3].forEach(chest => {
                     chest.classList.remove('unlocked');
                 });
-                
-                // Анимация кнопки
+
+                // Обновляем сообщение обратно на обычное
+                bearMessage.innerHTML = level.message;
+                if (infoBar) {
+                    infoBar.textContent = '🎵 Открывай сундуки — возвращай ритм в лес! 🎵';
+                }
+
                 resetLocksBtn.style.transform = 'scale(0.9)';
                 setTimeout(() => {
                     resetLocksBtn.style.transform = '';
@@ -580,13 +599,11 @@
                 });
             });
 
-            // Анимация цветов с разной задержкой
             const flowers = document.querySelectorAll('.flower');
             flowers.forEach((flower, index) => {
                 flower.style.animationDelay = (index * 0.2) + 's';
             });
 
-            // Устанавливаем уровень в зависимости от параметра URL
             if (fromLevel >= 0 && fromLevel < levels.length) {
                 setLevel(fromLevel);
             } else {
