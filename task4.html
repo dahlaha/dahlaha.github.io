@@ -195,6 +195,12 @@
             padding: 0;
         }
 
+        .rhythm-group {
+            display: inline-flex;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+
         .rhythm-item {
             display: flex;
             flex-direction: column;
@@ -852,37 +858,52 @@
             const rhythm = rhythms[currentIndex];
             rhythmTitle.textContent = rhythm.title;
             messageBubble.innerHTML = rhythm.message;
-            
+
             let html = '';
-            rhythm.sequence.forEach(item => {
+            let groupItems = [];
+
+            rhythm.sequence.forEach((item, index) => {
                 if (item.type === 'spacer') {
+                    // Закрываем предыдущую группу
+                    if (groupItems.length > 0) {
+                        html += `<li class="rhythm-group">${groupItems.join('')}</li>`;
+                        groupItems = [];
+                    }
+                    // Добавляем spacer как разделитель
                     html += `<li class="rhythm-item spacer" aria-hidden="true"></li>`;
                 } else {
-                    html += `
-                        <li class="rhythm-item ${item.type}">
+                    // Добавляем элемент в текущую группу
+                    groupItems.push(`
+                        <div class="rhythm-item ${item.type}">
                             <span class="rhythm-syllable">${item.syllable}</span>
                             <span class="rhythm-fruit" aria-hidden="true">${item.symbol}</span>
                             <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">
                                 ${item.type === 'long' ? 'Длинный звук ТА' : 'Короткий звук ТИ'}
                             </span>
-                        </li>
-                    `;
+                        </div>
+                    `);
+                }
+
+                // Закрываем последнюю группу
+                if (index === rhythm.sequence.length - 1 && groupItems.length > 0) {
+                    html += `<li class="rhythm-group">${groupItems.join('')}</li>`;
                 }
             });
+
             rhythmRow.innerHTML = html;
             updateLegend(rhythm);
             counterDisplay.textContent = `${currentIndex + 1} / ${rhythms.length}`;
-            
+
             // Сброс выбора
             selectedSongForCurrentRhythm = null;
             document.querySelectorAll('.song-card').forEach(card => {
                 card.classList.remove('selected', 'correct', 'incorrect');
             });
             songFeedback.innerHTML = '';
-            
+
             // Обновляем кнопки
             prevBtn.disabled = currentIndex === 0 || isCompleted;
-            
+
             if (currentIndex === rhythms.length - 1) {
                 nextBtn.textContent = '🏁 ЗАВЕРШИТЬ';
                 nextBtn.setAttribute('aria-label', 'Завершить задание');
@@ -890,7 +911,7 @@
                 nextBtn.textContent = 'ВПЕРЁД ▶';
                 nextBtn.setAttribute('aria-label', 'Следующий ритм');
             }
-            
+
             nextBtn.disabled = isCompleted;
             resetBtn.style.display = isCompleted ? 'inline-block' : 'none';
         }
