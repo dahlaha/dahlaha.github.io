@@ -18,6 +18,14 @@
             border: 5px solid #bc9b5a;
             box-shadow: 0 10px 0 #7a6234, inset 0 0 0 6px #fff3c9;
         }
+        .rhythm-item.spacer {
+            opacity: 0;
+            pointer-events: none;
+            min-width: 30px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
 
         .rhythm-title {
             text-align: center;
@@ -349,6 +357,7 @@
                     { syllable: 'ТИ', fruit: '🍓', type: 'short' },
                     { syllable: 'ТИ', fruit: '🍓', type: 'short' },
                     { syllable: 'ТИ', fruit: '🍓', type: 'short' },
+                    { syllable: '', fruit: '', type: 'spacer' },
                     { syllable: 'ТА', fruit: '🍏', type: 'long' },
                     { syllable: 'ТА', fruit: '🍏', type: 'long' }
                 ],
@@ -443,45 +452,60 @@
             isPlaying = true;
             playBtn.classList.add('playing');
             playBtn.textContent = '🔊 Играет...';
-            
+
             const now = ctx.currentTime;
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0.3, now);
             gain.connect(ctx.destination);
-            
+
             const rhythm = rhythms[currentIndex];
-            const totalDuration = rhythm.items.reduce((sum, item, idx) => {
-                return sum + (idx === 0 ? 0 : (item.type === 'long' ? 0.5 : 0.25));
-            }, 0) + (rhythm.items[rhythm.items.length - 1].type === 'long' ? 0.5 : 0.25);
-            
+
+            // Вычисляем общую длительность с учётом пауз
+            let totalDuration = 0;
             let timeOffset = 0;
+
             rhythm.items.forEach((item, idx) => {
                 if (idx > 0) {
-                    timeOffset += rhythm.items[idx - 1].type === 'long' ? 0.5 : 0.25;
+                    const prevItem = rhythm.items[idx - 1];
+                    if (prevItem.type === 'spacer') {
+                        // Добавляем паузу после spacer (0.8 секунды тишины)
+                        timeOffset += 0.3;
+                    } else {
+                        timeOffset += prevItem.type === 'long' ? 0.5 : 0.25;
+                    }
                 }
-                
+
+                // Пропускаем spacer (не создаём звук)
+                if (item.type === 'spacer') {
+                    totalDuration = timeOffset;
+                    return;
+                }
+
                 const isLong = item.type === 'long';
                 const osc = ctx.createOscillator();
                 osc.type = 'triangle';
                 osc.frequency.value = isLong ? 600 : 1000;
-                
+
                 const g = ctx.createGain();
                 g.gain.setValueAtTime(0.2, now + timeOffset);
                 g.gain.exponentialRampToValueAtTime(0.001, now + timeOffset + (isLong ? 0.3 : 0.1));
-                
+
                 osc.connect(g);
                 g.connect(gain);
                 osc.start(now + timeOffset);
                 osc.stop(now + timeOffset + (isLong ? 0.3 : 0.1));
+
+                totalDuration = timeOffset + (isLong ? 0.3 : 0.1);
             });
-            
+
+            // Сбрасываем состояние кнопки после воспроизведения
             clearTimeout(playTimeout);
             playTimeout = setTimeout(() => {
                 isPlaying = false;
                 playBtn.classList.remove('playing');
                 playBtn.textContent = '🥁 Простучать ритм';
                 ctx.close();
-            }, (totalDuration + 0.3) * 1000);
+            }, (totalDuration + 0.5) * 1000);
         }
 
         function renderRhythm() {
@@ -491,15 +515,22 @@
             
             let html = '';
             rhythm.items.forEach((item, idx) => {
-                html += `
-                    <li class="rhythm-item ${item.type}">
-                        <span class="rhythm-syllable">${item.syllable}</span>
-                        <span class="rhythm-fruit" aria-hidden="true">${item.fruit}</span>
-                        <span class="sr-only">
-                            ${item.type === 'long' ? 'Длинный звук ТА' : 'Короткий звук ТИ'}
-                        </span>
-                    </li>
-                `;
+                if (item.type === 'spacer') {
+                    html += `<li class="rhythm-item spacer" aria-hidden="true">
+                        <span class="rhythm-syllable" style="opacity: 0;">-</span>
+                        <span class="rhythm-fruit" style="opacity: 0;">-</span>
+                    </li>`;
+                } else {
+                    html += `
+                        <li class="rhythm-item ${item.type}">
+                            <span class="rhythm-syllable">${item.syllable}</span>
+                            <span class="rhythm-fruit" aria-hidden="true">${item.fruit}</span>
+                            <span class="sr-only">
+                                ${item.type === 'long' ? 'Длинный звук ТА' : 'Короткий звук ТИ'}
+                            </span>
+                        </li>
+                    `;
+                }
             });
             rhythmRow.innerHTML = html;
             
