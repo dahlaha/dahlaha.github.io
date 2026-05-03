@@ -72,17 +72,6 @@
             animation: shake 0.5s ease;
         }
 
-        @keyframes correctPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
         .song-name {
             font-size: 1.3rem;
             font-weight: bold;
@@ -133,11 +122,6 @@
             background: #4caf50;
             border-bottom-color: #2e7d32;
             animation: playingPulse 0.5s infinite;
-        }
-
-        @keyframes playingPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .choose-btn {
@@ -445,6 +429,21 @@
                 padding: 8px 10px;
             }
         }
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @keyframes playingPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
     </style>
 </head>
 <body>
@@ -512,21 +511,25 @@
         const TASK_ID = 'task4.html';
 
         // ----- ДАННЫЕ ПЕСЕН -----
+        // Добавлены пути к MP3-файлам
         const songs = [
             {
                 id: 'teacher',
                 name: '🍎 Песня ко Дню учителя',
-                melody: [523.25, 587.33, 659.25, 698.46],
+                mp3File: 'audio/Ритм 2 Учителя.mp3', // ← путь к файлу
+                melody: [523.25, 587.33, 659.25, 698.46]
             },
             {
                 id: 'mother',
                 name: '🌸 Песня ко Дню матери',
-                melody: [392.00, 440.00, 493.88, 523.25],
+                mp3File: 'audio/Ритм 3 Мама.mp3', // ← путь к файлу
+                melody: [392.00, 440.00, 493.88, 523.25]
             },
             {
                 id: 'february',
                 name: '⭐ Песня к 23 февраля',
-                melody: [261.63, 329.63, 392.00, 440.00],
+                mp3File: 'audio/Ритм 1 Защитники Отечества.mp3', // ← путь к файлу
+                melody: [261.63, 329.63, 392.00, 440.00]
             }
         ];
 
@@ -536,7 +539,7 @@
                 title: '🎵 Ритм 1 🎵',
                 longSymbol: '🟩',
                 shortSymbol: '🟡',
-                correctSongId: 'teacher',
+                correctSongId: 'february', // Соответствует песне к 23 февраля
                 sequence: [
                     { type: 'long', symbol: '🟩', syllable: 'ТА' },
                     { type: 'long', symbol: '🟩', syllable: 'ТА' },
@@ -568,7 +571,7 @@
                 title: '🎵 Ритм 2 🎵',
                 longSymbol: '🟨',
                 shortSymbol: '🔴',
-                correctSongId: 'mother',
+                correctSongId: 'teacher', // Соответствует песне ко дню учителя
                 sequence: [
                     { type: 'long', symbol: '🟨', syllable: 'ТА' },
                     { type: 'short', symbol: '🔴', syllable: 'ТИ' },
@@ -591,7 +594,7 @@
                 title: '🎵 Ритм 3 🎵',
                 longSymbol: '🟪',
                 shortSymbol: '🔵',
-                correctSongId: 'february',
+                correctSongId: 'mother', // Соответствует песне ко дню матери
                 sequence: [
                     { type: 'long', symbol: '🟪', syllable: 'ТА' },
                     { type: 'long', symbol: '🟪', syllable: 'ТА' },
@@ -627,6 +630,7 @@
         let isPlaying = false;
         let selectedSongForCurrentRhythm = null;
         let correctAnswers = {};
+        let currentAudio = null; // Для отслеживания текущего аудио
 
         const rhythmTitle = document.getElementById('rhythmTitle');
         const rhythmRow = document.getElementById('rhythmRow');
@@ -662,6 +666,77 @@
             setTimeout(() => confetti({ particleCount: 120, spread: 80, origin: { y: 0.6, x: 0.7 } }), 200);
         }
 
+        /**
+         * Воспроизводит MP3-файл песни
+         * @param {object} song - объект песни с полем mp3File
+         * @param {HTMLElement} btnElement - кнопка для визуальной обратной связи
+         */
+        function playSongMP3(song, btnElement) {
+            // Останавливаем предыдущее аудио, если есть
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                // Убираем класс playing со всех кнопок
+                document.querySelectorAll('.listen-btn.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                    btn.textContent = '▶ Слушать';
+                });
+            }
+
+            try {
+                const audio = new Audio(song.mp3File);
+                currentAudio = audio;
+                
+                // Визуальная обратная связь на кнопке
+                if (btnElement) {
+                    btnElement.classList.add('playing');
+                    btnElement.textContent = '🔊 Играет...';
+                }
+                
+                // Воспроизводим
+                audio.play().catch(err => {
+                    console.error('Ошибка воспроизведения MP3:', err);
+                    if (btnElement) {
+                        btnElement.classList.remove('playing');
+                        btnElement.textContent = '▶ Слушать';
+                    }
+                    currentAudio = null;
+                });
+                
+                // Событие окончания воспроизведения
+                audio.addEventListener('ended', () => {
+                    if (btnElement) {
+                        btnElement.classList.remove('playing');
+                        btnElement.textContent = '▶ Слушать';
+                    }
+                    currentAudio = null;
+                });
+                
+                // На случай ошибки
+                audio.addEventListener('error', (e) => {
+                    console.error('Ошибка загрузки аудио:', e);
+                    if (btnElement) {
+                        btnElement.classList.remove('playing');
+                        btnElement.textContent = '▶ Слушать';
+                    }
+                    currentAudio = null;
+                });
+                
+            } catch (error) {
+                console.error('Ошибка создания Audio:', error);
+                if (btnElement) {
+                    btnElement.classList.remove('playing');
+                    btnElement.textContent = '▶ Слушать';
+                }
+                currentAudio = null;
+            }
+        }
+
+        /**
+         * Воспроизводит мелодию песни синтезированным звуком (запасной вариант)
+         * @param {object} song - объект песни с полем melody
+         * @param {HTMLElement} btnElement - кнопка для визуальной обратной связи
+         */
         function playSongMelody(song, btnElement) {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -709,6 +784,17 @@
                 }
                 ctx.close();
             }, song.melody.length * 300 + 300);
+        }
+
+        /**
+         * Воспроизводит MP3 или синтезированную мелодию в зависимости от наличия файла
+         */
+        function playSong(song, btnElement) {
+            if (song.mp3File) {
+                playSongMP3(song, btnElement);
+            } else {
+                playSongMelody(song, btnElement);
+            }
         }
 
         function playCurrentRhythm() {
@@ -823,15 +909,17 @@
             songsGrid.innerHTML = html;
             songFeedback.innerHTML = '';
 
+            // Обработчики для кнопок "Слушать"
             document.querySelectorAll('.listen-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     const id = e.currentTarget.getAttribute('data-song-id');
                     const song = songs.find(s => s.id === id);
-                    if (song) playSongMelody(song, e.currentTarget);
+                    if (song) playSong(song, e.currentTarget);
                 });
             });
 
+            // Обработчики для кнопок "Выбрать"
             document.querySelectorAll('.choose-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -858,6 +946,16 @@
             const rhythm = rhythms[currentIndex];
             rhythmTitle.textContent = rhythm.title;
             messageBubble.innerHTML = rhythm.message;
+
+            // Останавливаем аудио при смене ритма
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.querySelectorAll('.listen-btn.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                    btn.textContent = '▶ Слушать';
+                });
+            }
 
             let html = '';
             let groupItems = [];
@@ -926,6 +1024,12 @@
             
             saveProgress();
             fireConfetti();
+            
+            // Останавливаем аудио при завершении
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
         }
 
         function resetTask() {
@@ -935,6 +1039,17 @@
             selectedSongForCurrentRhythm = null;
             completionMessage.textContent = '';
             resetBtn.style.display = 'none';
+            
+            // Останавливаем аудио
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.querySelectorAll('.listen-btn.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                    btn.textContent = '▶ Слушать';
+                });
+            }
+            
             renderRhythm();
             rhythmTitle.focus();
         }
@@ -979,7 +1094,7 @@
             }
         });
 
-        // Анимация ушек медвежонка (через CSS hover в styles.css)
+        // Анимация ушек медвежонка
         const bear = document.getElementById('bearHead');
         if (bear) {
             bear.addEventListener('mouseenter', () => {
